@@ -21,6 +21,7 @@ import { Route as AuthenticatedDepositoRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedJogoRouteImport } from './routes/_authenticated/jogo'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedSaqueRouteImport } from './routes/_authenticated/saque'
+import { Route as ApiGameConfigRouteImport } from './routes/api/game/config'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminAfiliadosRouteImport } from './routes/_authenticated/_admin/admin.afiliados'
 import { Route as AuthenticatedAdminAdminAparenciaRouteImport } from './routes/_authenticated/_admin/admin.aparencia'
@@ -94,6 +95,11 @@ const AuthenticatedSaqueRoute = AuthenticatedSaqueRouteImport.update({
   id: '/saque',
   path: '/saque',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiGameConfigRoute = ApiGameConfigRouteImport.update({
+  id: '/api/game/config',
+  path: '/api/game/config',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminAdminIndexRoute =
   AuthenticatedAdminAdminIndexRouteImport.update({
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/jogo': typeof AuthenticatedJogoRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/config': typeof ApiGameConfigRoute
   '/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
   '/admin/comissoes': typeof AuthenticatedAdminAdminComissoesRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/jogo': typeof AuthenticatedJogoRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/config': typeof ApiGameConfigRoute
   '/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
   '/admin/comissoes': typeof AuthenticatedAdminAdminComissoesRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/_authenticated/jogo': typeof AuthenticatedJogoRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/config': typeof ApiGameConfigRoute
   '/_authenticated/_admin/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/_authenticated/_admin/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
   '/_authenticated/_admin/admin/comissoes': typeof AuthenticatedAdminAdminComissoesRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/jogo'
     | '/painel'
     | '/saque'
+    | '/api/game/config'
     | '/admin/afiliados'
     | '/admin/aparencia'
     | '/admin/comissoes'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/jogo'
     | '/painel'
     | '/saque'
+    | '/api/game/config'
     | '/admin/afiliados'
     | '/admin/aparencia'
     | '/admin/comissoes'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/_authenticated/jogo'
     | '/_authenticated/painel'
     | '/_authenticated/saque'
+    | '/api/game/config'
     | '/_authenticated/_admin/admin/afiliados'
     | '/_authenticated/_admin/admin/aparencia'
     | '/_authenticated/_admin/admin/comissoes'
@@ -363,6 +375,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiGameConfigRoute: typeof ApiGameConfigRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -450,6 +463,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/saque'
       preLoaderRoute: typeof AuthenticatedSaqueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/game/config': {
+      id: '/api/game/config'
+      path: '/api/game/config'
+      fullPath: '/api/game/config'
+      preLoaderRoute: typeof ApiGameConfigRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_admin/admin/': {
       id: '/_authenticated/_admin/admin/'
@@ -648,6 +668,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiGameConfigRoute: ApiGameConfigRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
