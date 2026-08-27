@@ -13,6 +13,7 @@
     if (event.origin !== window.location.origin) return;
     if (event.data && event.data.type === "pandapix:session") {
       sessionToken = event.data.access_token || null;
+      window.dispatchEvent(new CustomEvent("pandapix:session-ready"));
     }
   });
 
