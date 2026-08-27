@@ -21,6 +21,7 @@ import { Route as AuthenticatedDepositoRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedJogoRouteImport } from './routes/_authenticated/jogo'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedSaqueRouteImport } from './routes/_authenticated/saque'
+import { Route as ApiGameBalanceRouteImport } from './routes/api/game/balance'
 import { Route as ApiGameBetRouteImport } from './routes/api/game/bet'
 import { Route as ApiGameConfigRouteImport } from './routes/api/game/config'
 import { Route as ApiGameResultRouteImport } from './routes/api/game/result'
@@ -97,6 +98,11 @@ const AuthenticatedSaqueRoute = AuthenticatedSaqueRouteImport.update({
   id: '/saque',
   path: '/saque',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiGameBalanceRoute = ApiGameBalanceRouteImport.update({
+  id: '/api/game/balance',
+  path: '/api/game/balance',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGameBetRoute = ApiGameBetRouteImport.update({
   id: '/api/game/bet',
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/jogo': typeof AuthenticatedJogoRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/balance': typeof ApiGameBalanceRoute
   '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
   '/api/game/result': typeof ApiGameResultRoute
@@ -245,6 +252,7 @@ export interface FileRoutesByTo {
   '/jogo': typeof AuthenticatedJogoRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/balance': typeof ApiGameBalanceRoute
   '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
   '/api/game/result': typeof ApiGameResultRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/_authenticated/jogo': typeof AuthenticatedJogoRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/balance': typeof ApiGameBalanceRoute
   '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
   '/api/game/result': typeof ApiGameResultRoute
@@ -310,6 +319,7 @@ export interface FileRouteTypes {
     | '/jogo'
     | '/painel'
     | '/saque'
+    | '/api/game/balance'
     | '/api/game/bet'
     | '/api/game/config'
     | '/api/game/result'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/jogo'
     | '/painel'
     | '/saque'
+    | '/api/game/balance'
     | '/api/game/bet'
     | '/api/game/config'
     | '/api/game/result'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/_authenticated/jogo'
     | '/_authenticated/painel'
     | '/_authenticated/saque'
+    | '/api/game/balance'
     | '/api/game/bet'
     | '/api/game/config'
     | '/api/game/result'
@@ -399,6 +411,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiGameBalanceRoute: typeof ApiGameBalanceRoute
   ApiGameBetRoute: typeof ApiGameBetRoute
   ApiGameConfigRoute: typeof ApiGameConfigRoute
   ApiGameResultRoute: typeof ApiGameResultRoute
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/saque'
       preLoaderRoute: typeof AuthenticatedSaqueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/game/balance': {
+      id: '/api/game/balance'
+      path: '/api/game/balance'
+      fullPath: '/api/game/balance'
+      preLoaderRoute: typeof ApiGameBalanceRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/game/bet': {
       id: '/api/game/bet'
@@ -708,6 +728,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiGameBalanceRoute: ApiGameBalanceRoute,
   ApiGameBetRoute: ApiGameBetRoute,
   ApiGameConfigRoute: ApiGameConfigRoute,
   ApiGameResultRoute: ApiGameResultRoute,
