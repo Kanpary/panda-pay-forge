@@ -479,6 +479,27 @@ export type Database = {
     }
     Functions: {
       admin_overview: { Args: never; Returns: Json }
+      game_place_bet: {
+        Args: { _aposta: number; _is_demo?: boolean }
+        Returns: {
+          saldo: number
+          saldo_bonus: number
+          session_id: string
+        }[]
+      }
+      game_settle_bet: {
+        Args: {
+          _data?: Json
+          _ganho: number
+          _resultado?: string
+          _session_id: string
+        }
+        Returns: {
+          ganho: number
+          saldo: number
+          saldo_bonus: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

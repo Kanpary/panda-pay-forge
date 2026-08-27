@@ -8,9 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { maskCpf, maskPhone, onlyDigits } from "@/lib/format";
 
 export const Route = createFileRoute("/register")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    ref: typeof search["ref"] === "string" ? search["ref"].slice(0, 40) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const raw = search["ref"];
+    const ref =
+      typeof raw === "string" || typeof raw === "number" ? String(raw).slice(0, 40) : undefined;
+    return { ref };
+  },
+
   head: () => ({
     meta: [
       { title: "Criar conta — PandaPix" },
@@ -34,7 +38,7 @@ function RegisterPage() {
   const { ref } = Route.useSearch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -77,37 +81,38 @@ function RegisterPage() {
       let friendly = "Não foi possível cadastrar. Tente novamente.";
       if (msg.includes("already") || msg.includes("user_already_registered")) {
         friendly = "E-mail já cadastrado. Use outro e-mail ou faça login.";
+      } else if (msg.includes("pwned") || msg.includes("leaked") || msg.includes("compromis")) {
+        friendly = "Essa senha já vazou em outros sites. Escolha uma senha diferente.";
       } else if (msg.includes("weak_password") || msg.includes("password")) {
-        friendly = "Senha muito fraca. Use pelo menos 6 caracteres com letras e números.";
+        friendly = "Senha muito fraca. Use ao menos 8 caracteres com letras e números.";
       } else if (msg.includes("email") && msg.includes("invalid")) {
         friendly = "E-mail inválido. Verifique o endereço digitado.";
       } else if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit")) {
         friendly = "Muitas tentativas. Aguarde um pouco antes de tentar novamente.";
       }
+
       toast.error(friendly);
       return;
     }
 
-    if (data.session) {
-      await navigate({ to: "/painel", replace: true });
-      return;
+    if (!data.session) {
+      // Auto-confirm está ativo, mas se a sessão não vier, faz login imediato.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: parsed.data.email,
+        password: parsed.data.password,
+      });
+      if (signInError) {
+        toast.success("Conta criada! Faça login para continuar.");
+        await navigate({ to: "/login", replace: true });
+        return;
+      }
     }
-    setSent(true);
+
+    toast.success("Conta criada com sucesso!");
+    await navigate({ to: "/painel", replace: true });
   }
 
-  if (sent) {
-    return (
-      <AuthShell title="Confirme seu e-mail" subtitle="Enviamos um link de confirmação.">
-        <p className="text-sm text-muted-foreground">
-          Abra o e-mail enviado para <strong className="text-foreground">{form.email}</strong> e clique no
-          link para ativar sua conta. Depois, faça login.
-        </p>
-        <Link to="/login" className={`mt-5 block text-center ${buttonClass}`}>
-          Ir para o login
-        </Link>
-      </AuthShell>
-    );
-  }
+
 
   return (
     <AuthShell
