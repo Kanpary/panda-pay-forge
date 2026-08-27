@@ -232,7 +232,7 @@ export const updateUser = createServerFn({ method: "POST" })
     if (Object.keys(cleanPatch).length === 0) return { ok: true };
     const { error } = await supabaseAdmin
       .from("profiles")
-      .update(cleanPatch as any)
+      .update(cleanPatch as never)
       .eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
