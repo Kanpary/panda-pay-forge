@@ -88,26 +88,24 @@ function RegisterPage() {
       return;
     }
 
-    if (data.session) {
-      await navigate({ to: "/painel", replace: true });
-      return;
+    if (!data.session) {
+      // Auto-confirm está ativo, mas se a sessão não vier, faz login imediato.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: parsed.data.email,
+        password: parsed.data.password,
+      });
+      if (signInError) {
+        toast.success("Conta criada! Faça login para continuar.");
+        await navigate({ to: "/login", replace: true });
+        return;
+      }
     }
-    setSent(true);
+
+    toast.success("Conta criada com sucesso!");
+    await navigate({ to: "/painel", replace: true });
   }
 
-  if (sent) {
-    return (
-      <AuthShell title="Confirme seu e-mail" subtitle="Enviamos um link de confirmação.">
-        <p className="text-sm text-muted-foreground">
-          Abra o e-mail enviado para <strong className="text-foreground">{form.email}</strong> e clique no
-          link para ativar sua conta. Depois, faça login.
-        </p>
-        <Link to="/login" className={`mt-5 block text-center ${buttonClass}`}>
-          Ir para o login
-        </Link>
-      </AuthShell>
-    );
-  }
+
 
   return (
     <AuthShell
