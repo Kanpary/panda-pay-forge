@@ -77,13 +77,16 @@ function RegisterPage() {
       let friendly = "Não foi possível cadastrar. Tente novamente.";
       if (msg.includes("already") || msg.includes("user_already_registered")) {
         friendly = "E-mail já cadastrado. Use outro e-mail ou faça login.";
+      } else if (msg.includes("pwned") || msg.includes("leaked") || msg.includes("compromis")) {
+        friendly = "Essa senha já vazou em outros sites. Escolha uma senha diferente.";
       } else if (msg.includes("weak_password") || msg.includes("password")) {
-        friendly = "Senha muito fraca. Use pelo menos 6 caracteres com letras e números.";
+        friendly = "Senha muito fraca. Use ao menos 8 caracteres com letras e números.";
       } else if (msg.includes("email") && msg.includes("invalid")) {
         friendly = "E-mail inválido. Verifique o endereço digitado.";
       } else if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit")) {
         friendly = "Muitas tentativas. Aguarde um pouco antes de tentar novamente.";
       }
+
       toast.error(friendly);
       return;
     }
