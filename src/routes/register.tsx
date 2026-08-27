@@ -8,9 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { maskCpf, maskPhone, onlyDigits } from "@/lib/format";
 
 export const Route = createFileRoute("/register")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    ref: typeof search["ref"] === "string" ? search["ref"].slice(0, 40) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const raw = search["ref"];
+    const ref =
+      typeof raw === "string" || typeof raw === "number" ? String(raw).slice(0, 40) : undefined;
+    return { ref };
+  },
+
   head: () => ({
     meta: [
       { title: "Criar conta — PandaPix" },
