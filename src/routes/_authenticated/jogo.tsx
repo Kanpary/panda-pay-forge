@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +22,20 @@ export const Route = createFileRoute("/_authenticated/jogo")({
 });
 
 function JogoPage() {
-  const { profile, user } = useAuth();
+  const { profile, user, session } = useAuth();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const sendSession = () => {
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: "pandapix:session", access_token: session?.access_token ?? null },
+        window.location.origin,
+      );
+    };
+    sendSession();
+    window.addEventListener("message", sendSession);
+    return () => window.removeEventListener("message", sendSession);
+  }, [session?.access_token]);
 
   const historyQuery = useQuery({
     queryKey: ["game-history", user?.id],
@@ -60,7 +74,14 @@ function JogoPage() {
         <h2 className="sr-only">Jogo PandaPix</h2>
         <iframe
           title="Jogo do PandaPix"
+          ref={iframeRef}
           src="/game/index.html"
+          onLoad={() => {
+            iframeRef.current?.contentWindow?.postMessage(
+              { type: "pandapix:session", access_token: session?.access_token ?? null },
+              window.location.origin,
+            );
+          }}
           className="block h-[min(720px,calc(100vh-12rem))] min-h-[560px] w-full border-0"
           loading="eager"
           allow="autoplay"

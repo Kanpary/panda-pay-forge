@@ -7,9 +7,22 @@
 (function () {
   "use strict";
 
+  var sessionToken = null;
+
+  window.addEventListener("message", function (event) {
+    if (event.origin !== window.location.origin) return;
+    if (event.data && event.data.type === "pandapix:session") {
+      sessionToken = event.data.access_token || null;
+    }
+  });
+
   function getToken() {
+    if (sessionToken) return sessionToken;
     try {
-      var store = window.parent && window.parent !== window ? window.parent.localStorage : window.localStorage;
+      var store =
+        window.parent && window.parent !== window
+          ? window.parent.localStorage
+          : window.localStorage;
       for (var i = 0; i < store.length; i++) {
         var key = store.key(i);
         if (key && key.indexOf("-auth-token") !== -1) {
