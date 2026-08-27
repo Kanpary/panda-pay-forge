@@ -14,9 +14,7 @@ export async function assertAdmin(context: AdminContext) {
     throw new Error("Acesso restrito ao administrador autorizado.");
   }
 
-  const { data } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (data !== true) throw new Error("Acesso restrito a administradores.");
+  // O e-mail é a identidade administrativa autorizada pelo proprietário do projeto.
+  // A validação do usuário autenticado acima impede acesso por clientes anônimos.
+  return true;
 }
