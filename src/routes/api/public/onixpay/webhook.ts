@@ -9,7 +9,7 @@ export const Route = createFileRoute("/api/public/onixpay/webhook")({
       POST: async ({ request }) => {
         const rawBody = await request.text();
         const signature = request.headers.get("x-onixpay-signature");
-        if (signature && !verifyOnixPaySignature(rawBody, signature)) {
+        if (!signature || !verifyOnixPaySignature(rawBody, signature)) {
           return new Response("Assinatura inválida", { status: 401 });
         }
 
