@@ -18,7 +18,10 @@ export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
       { title: "Criar conta — PandaPix" },
-      { name: "description", content: "Crie sua conta PandaPix em segundos e jogue com depósito via Pix." },
+      {
+        name: "description",
+        content: "Crie sua conta PandaPix em segundos e jogue com depósito via Pix.",
+      },
       { property: "og:title", content: "Criar conta — PandaPix" },
       { property: "og:description", content: "Cadastro rápido, depósito via Pix e saque na hora." },
     ],
@@ -38,7 +41,7 @@ function RegisterPage() {
   const { ref } = Route.useSearch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
+
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -111,8 +114,6 @@ function RegisterPage() {
     toast.success("Conta criada com sucesso!");
     await navigate({ to: "/painel", replace: true });
   }
-
-
 
   return (
     <AuthShell

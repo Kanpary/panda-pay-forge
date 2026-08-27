@@ -13,18 +13,30 @@ export const Route = createFileRoute("/api/public/onixpay/webhook")({
           return new Response("Assinatura inválida", { status: 401 });
         }
 
-        let payload: { transactionType?: string; transactionId?: string; amount?: number; status?: string };
+        let payload: {
+          transactionType?: string;
+          transactionId?: string;
+          amount?: number;
+          status?: string;
+        };
         try {
           payload = JSON.parse(rawBody) as typeof payload;
         } catch {
           return new Response("JSON inválido", { status: 400 });
         }
 
-        if (payload.transactionType !== "RECEIVEPIX" || payload.status !== "PAID" || !payload.transactionId) {
+        if (
+          payload.transactionType !== "RECEIVEPIX" ||
+          payload.status !== "PAID" ||
+          !payload.transactionId
+        ) {
           return new Response("Received", { status: 200 });
         }
 
-        const rpc = supabaseAdmin.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: Error | null }>;
+        const rpc = supabaseAdmin.rpc as unknown as (
+          name: string,
+          args: Record<string, unknown>,
+        ) => Promise<{ error: Error | null }>;
         const { error } = await rpc("credit_onixpay_deposit", {
           _transaction_id: payload.transactionId,
           _amount: Number(payload.amount ?? 0),

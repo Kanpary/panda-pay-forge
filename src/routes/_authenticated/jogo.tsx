@@ -44,7 +44,9 @@ function JogoPage() {
       <section className="panda-gradient rounded-2xl border border-border p-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Saldo disponível</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Saldo disponível
+            </p>
             <p className="mt-1 text-3xl font-extrabold text-primary">{brl(profile?.saldo)}</p>
             <p className="mt-1 text-xs text-muted-foreground">Bônus: {brl(profile?.saldo_bonus)}</p>
           </div>

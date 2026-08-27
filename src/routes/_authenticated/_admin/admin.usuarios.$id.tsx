@@ -4,7 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { AdminCard, AdminEmpty, AdminRow, AdminShell, adminNoIndex, smallBtn } from "@/components/AdminShell";
+import {
+  AdminCard,
+  AdminEmpty,
+  AdminRow,
+  AdminShell,
+  adminNoIndex,
+  smallBtn,
+} from "@/components/AdminShell";
 import { Field, inputClass } from "@/components/AuthShell";
 import { getUserDetail } from "@/lib/admin-lists.functions";
 import { updateUser } from "@/lib/admin.functions";
@@ -75,7 +82,7 @@ function AdminUserDetail() {
   return (
     <AdminShell
       title="Detalhe do usuário"
-      description={p ? p.email ?? p.id : "Carregando…"}
+      description={p ? (p.email ?? p.id) : "Carregando…"}
       actions={
         <Link
           to="/admin/usuarios"
@@ -113,7 +120,8 @@ function AdminUserDetail() {
                 <span className="text-muted-foreground">Cadastro:</span> {dateTime(p.created_at)}
               </p>
               <p>
-                <span className="text-muted-foreground">Código afiliado:</span> {p.affiliate_code ?? "-"}
+                <span className="text-muted-foreground">Código afiliado:</span>{" "}
+                {p.affiliate_code ?? "-"}
               </p>
             </div>
           </AdminCard>
@@ -133,7 +141,9 @@ function AdminUserDetail() {
                   step="0.01"
                   min="0"
                   value={form.saldo}
-                  onChange={(event) => setForm((f) => ({ ...f, saldo: Number(event.target.value) }))}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, saldo: Number(event.target.value) }))
+                  }
                 />
               </Field>
               <Field label="Saldo bônus (R$)">
@@ -143,7 +153,9 @@ function AdminUserDetail() {
                   step="0.01"
                   min="0"
                   value={form.saldo_bonus}
-                  onChange={(event) => setForm((f) => ({ ...f, saldo_bonus: Number(event.target.value) }))}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, saldo_bonus: Number(event.target.value) }))
+                  }
                 />
               </Field>
               <Field label="Saldo comissão (R$)">
@@ -153,7 +165,9 @@ function AdminUserDetail() {
                   step="0.01"
                   min="0"
                   value={form.saldo_comissao}
-                  onChange={(event) => setForm((f) => ({ ...f, saldo_comissao: Number(event.target.value) }))}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, saldo_comissao: Number(event.target.value) }))
+                  }
                 />
               </Field>
               <Field label="CPA (R$)">
@@ -163,7 +177,9 @@ function AdminUserDetail() {
                   step="0.01"
                   min="0"
                   value={form.comissao_cpa}
-                  onChange={(event) => setForm((f) => ({ ...f, comissao_cpa: Number(event.target.value) }))}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, comissao_cpa: Number(event.target.value) }))
+                  }
                 />
               </Field>
               <Field label="CPA nível 2 (R$)">
@@ -196,7 +212,10 @@ function AdminUserDetail() {
                   className={inputClass}
                   value={form.tipo_conta}
                   onChange={(event) =>
-                    setForm((f) => ({ ...f, tipo_conta: event.target.value as typeof f.tipo_conta }))
+                    setForm((f) => ({
+                      ...f,
+                      tipo_conta: event.target.value as typeof f.tipo_conta,
+                    }))
                   }
                 >
                   <option value="jogador">Jogador</option>

@@ -23,7 +23,12 @@ function AdminAppearance() {
           { name: "nome", label: "Nome do site", type: "text" },
           { name: "slogan", label: "Slogan", type: "text" },
           { name: "primary_color", label: "Cor primária", type: "text", hint: "Hex, ex: #3B82F6" },
-          { name: "accent_color", label: "Cor de destaque", type: "text", hint: "Hex, ex: #F59E0B" },
+          {
+            name: "accent_color",
+            label: "Cor de destaque",
+            type: "text",
+            hint: "Hex, ex: #F59E0B",
+          },
           { name: "footer_text", label: "Texto do rodapé", type: "text" },
         ]}
       />

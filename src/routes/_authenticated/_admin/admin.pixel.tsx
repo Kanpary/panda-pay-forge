@@ -15,7 +15,10 @@ export const Route = createFileRoute("/_authenticated/_admin/admin/pixel")({
 
 function AdminPixel() {
   return (
-    <AdminShell title="Pixel e rastreamento" description="Configure códigos de rastreamento e conversão.">
+    <AdminShell
+      title="Pixel e rastreamento"
+      description="Configure códigos de rastreamento e conversão."
+    >
       <AdminSettingsForm
         settingKey="pixel"
         title="Rastreamento"

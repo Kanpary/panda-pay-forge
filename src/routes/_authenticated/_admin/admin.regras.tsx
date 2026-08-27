@@ -15,7 +15,10 @@ export const Route = createFileRoute("/_authenticated/_admin/admin/regras")({
 
 function AdminRules() {
   return (
-    <AdminShell title="Afiliados e bônus" description="Ajuste comissões CPA/revshare e bônus de boas-vindas.">
+    <AdminShell
+      title="Afiliados e bônus"
+      description="Ajuste comissões CPA/revshare e bônus de boas-vindas."
+    >
       <AdminSettingsForm
         settingKey="afiliados"
         title="Regras de afiliados"

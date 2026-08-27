@@ -35,7 +35,11 @@ function DepositoPage() {
   const settingsQuery = useQuery({
     queryKey: ["settings", "gateway-public"],
     queryFn: async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "gateway").maybeSingle();
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "gateway")
+        .maybeSingle();
       return (data?.value ?? {}) as Record<string, number>;
     },
   });
@@ -113,11 +117,21 @@ function DepositoPage() {
         {pixQrCode ? (
           <div className="mt-4 rounded-xl bg-secondary p-4 text-center">
             <p className="text-sm font-bold">Pague para confirmar seu depósito</p>
-            <img src={pixQrCode.startsWith("data:") ? pixQrCode : `data:image/png;base64,${pixQrCode}`} alt="QR Code Pix para pagamento" className="mx-auto mt-3 size-52 rounded-lg bg-background p-2" />
-            {pixTransactionId ? <p className="mt-2 break-all text-[10px] text-muted-foreground">ID: {pixTransactionId}</p> : null}
+            <img
+              src={pixQrCode.startsWith("data:") ? pixQrCode : `data:image/png;base64,${pixQrCode}`}
+              alt="QR Code Pix para pagamento"
+              className="mx-auto mt-3 size-52 rounded-lg bg-background p-2"
+            />
+            {pixTransactionId ? (
+              <p className="mt-2 break-all text-[10px] text-muted-foreground">
+                ID: {pixTransactionId}
+              </p>
+            ) : null}
           </div>
         ) : (
-          <p className="mt-3 rounded-xl bg-secondary p-3 text-[11px] text-muted-foreground">O QR Code Pix será gerado automaticamente pela OnixPay.</p>
+          <p className="mt-3 rounded-xl bg-secondary p-3 text-[11px] text-muted-foreground">
+            O QR Code Pix será gerado automaticamente pela OnixPay.
+          </p>
         )}
       </section>
 
@@ -128,7 +142,10 @@ function DepositoPage() {
             <p className="text-xs text-muted-foreground">Nenhum depósito ainda.</p>
           ) : (
             (listQuery.data ?? []).map((d) => (
-              <div key={d.id} className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2">
+              <div
+                key={d.id}
+                className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2"
+              >
                 <div>
                   <p className="text-sm font-semibold">{brl(d.amount)}</p>
                   <p className="text-[11px] text-muted-foreground">{dateTime(d.created_at)}</p>

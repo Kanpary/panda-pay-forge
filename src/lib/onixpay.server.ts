@@ -15,35 +15,83 @@ async function onixRequest<T>(path: string, init: RequestInit = {}) {
   requireConfig();
   const response = await fetch(`${ONIXPAY_API_URL}${path}`, init);
   const body = (await response.json().catch(() => null)) as T | { message?: string } | null;
-  if (!response.ok) throw new Error((body as { message?: string } | null)?.message ?? `OnixPay falhou (${response.status}).`);
+  if (!response.ok)
+    throw new Error(
+      (body as { message?: string } | null)?.message ?? `OnixPay falhou (${response.status}).`,
+    );
   return body as T;
 }
 
 function formBody(values: Record<string, string | number | undefined>) {
-  return new URLSearchParams(Object.entries(values).filter(([, value]) => value !== undefined).map(([key, value]) => [key, String(value)]));
+  return new URLSearchParams(
+    Object.entries(values)
+      .filter(([, value]) => value !== undefined)
+      .map(([key, value]) => [key, String(value)]),
+  );
 }
 
-export type PixCharge = { qrcode?: string; transactionId?: string; reference_code?: string; status?: string; amount?: number };
+export type PixCharge = {
+  qrcode?: string;
+  transactionId?: string;
+  reference_code?: string;
+  status?: string;
+  amount?: number;
+};
 export type PixTransfer = { transactionId?: string; external_id?: string; status?: string };
-export type PixStatus = { transaction?: { transactionId?: string; external_id?: string; status?: string; amount?: number } };
+export type PixStatus = {
+  transaction?: { transactionId?: string; external_id?: string; status?: string; amount?: number };
+};
 
-export function createPixCharge(input: { amount: number; externalId: string; callbackUrl: string; name: string; cpf: string }) {
+export function createPixCharge(input: {
+  amount: number;
+  externalId: string;
+  callbackUrl: string;
+  name: string;
+  cpf: string;
+}) {
   return onixRequest<PixCharge>("/pix/qrcode.php", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: formBody({ client_id: ONIXPAY_CLIENT_ID, client_secret: ONIXPAY_CLIENT_SECRET, nome: input.name, cpf: input.cpf, valor: input.amount, descricao: `Depósito ${input.externalId}`, urlnoty: input.callbackUrl }),
+    body: formBody({
+      client_id: ONIXPAY_CLIENT_ID,
+      client_secret: ONIXPAY_CLIENT_SECRET,
+      nome: input.name,
+      cpf: input.cpf,
+      valor: input.amount,
+      descricao: `Depósito ${input.externalId}`,
+      urlnoty: input.callbackUrl,
+    }),
   });
 }
 
 export function getPixStatus(transactionId: string) {
-  return onixRequest<PixStatus>(`/pix/status.php?${formBody({ client_id: ONIXPAY_CLIENT_ID, client_secret: ONIXPAY_CLIENT_SECRET, transaction_id: transactionId })}`);
+  return onixRequest<PixStatus>(
+    `/pix/status.php?${formBody({ client_id: ONIXPAY_CLIENT_ID, client_secret: ONIXPAY_CLIENT_SECRET, transaction_id: transactionId })}`,
+  );
 }
 
-export function createPixTransfer(input: { amount: number; pixType: string; pixKey: string; externalId: string; name: string; cpf: string; callbackUrl: string }) {
+export function createPixTransfer(input: {
+  amount: number;
+  pixType: string;
+  pixKey: string;
+  externalId: string;
+  name: string;
+  cpf: string;
+  callbackUrl: string;
+}) {
   return onixRequest<PixTransfer>("/pix/payment.php", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: formBody({ client_id: ONIXPAY_CLIENT_ID, client_secret: ONIXPAY_CLIENT_SECRET, nome: input.name, cpf: input.cpf, valor: input.amount, chave_pix: input.pixKey, descricao: `Saque ${input.externalId}`, urlnoty: input.callbackUrl }),
+    body: formBody({
+      client_id: ONIXPAY_CLIENT_ID,
+      client_secret: ONIXPAY_CLIENT_SECRET,
+      nome: input.name,
+      cpf: input.cpf,
+      valor: input.amount,
+      chave_pix: input.pixKey,
+      descricao: `Saque ${input.externalId}`,
+      urlnoty: input.callbackUrl,
+    }),
   });
 }
 
@@ -53,7 +101,10 @@ export function verifyOnixPaySignature(payload: string, signature: string | null
   const provided = signature.replace(/^sha256=/, "");
   const expectedBuffer = Buffer.from(expected, "utf8");
   const providedBuffer = Buffer.from(provided, "utf8");
-  return expectedBuffer.length === providedBuffer.length && timingSafeEqual(expectedBuffer, providedBuffer);
+  return (
+    expectedBuffer.length === providedBuffer.length &&
+    timingSafeEqual(expectedBuffer, providedBuffer)
+  );
 }
 
 export { ONIXPAY_WEBHOOK_SECRET };

@@ -57,7 +57,11 @@ function SaquePage() {
   const settingsQuery = useQuery({
     queryKey: ["settings", "gateway-public"],
     queryFn: async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "gateway").maybeSingle();
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "gateway")
+        .maybeSingle();
       return (data?.value ?? {}) as Record<string, number>;
     },
   });
@@ -77,7 +81,9 @@ function SaquePage() {
 
   const mutation = useMutation({
     mutationFn: async () =>
-      requestWithdrawalFn({ data: { amount, pix_type: pixType, pix_key: pixKey.trim(), tipo: "jogador" } }),
+      requestWithdrawalFn({
+        data: { amount, pix_type: pixType, pix_key: pixKey.trim(), tipo: "jogador" },
+      }),
     onSuccess: async () => {
       if (!mountedRef.current) return;
       toast.success("Saque solicitado! Acompanhe o status abaixo.");
@@ -157,7 +163,10 @@ function SaquePage() {
             <p className="text-xs text-muted-foreground">Nenhum saque ainda.</p>
           ) : (
             (listQuery.data ?? []).map((w) => (
-              <div key={w.id} className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2">
+              <div
+                key={w.id}
+                className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2"
+              >
                 <div>
                   <p className="text-sm font-semibold">{brl(w.amount)}</p>
                   <p className="text-[11px] text-muted-foreground">

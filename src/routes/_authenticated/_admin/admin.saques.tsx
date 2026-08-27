@@ -4,7 +4,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminCard, AdminEmpty, AdminRow, AdminShell, adminNoIndex, smallBtn, smallBtnDanger, statusFilters } from "@/components/AdminShell";
+import {
+  AdminCard,
+  AdminEmpty,
+  AdminRow,
+  AdminShell,
+  adminNoIndex,
+  smallBtn,
+  smallBtnDanger,
+  statusFilters,
+} from "@/components/AdminShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { listWithdrawals } from "@/lib/admin-lists.functions";
 import { decideWithdrawal } from "@/lib/admin.functions";
@@ -92,7 +101,8 @@ function AdminWithdrawals() {
                 }
                 subtitle={
                   <>
-                    {row.tipo === "afiliado" ? "Afiliado" : "Jogador"} • {row.pix_type}: {row.pix_key}
+                    {row.tipo === "afiliado" ? "Afiliado" : "Jogador"} • {row.pix_type}:{" "}
+                    {row.pix_key}
                     {row.nome ? ` • ${row.nome}` : null} • {dateTime(row.created_at)}
                     {row.processed_at ? ` • processado em ${dateTime(row.processed_at)}` : null}
                   </>

@@ -4,7 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminCard, AdminEmpty, AdminRow, AdminShell, adminNoIndex, smallBtn } from "@/components/AdminShell";
+import {
+  AdminCard,
+  AdminEmpty,
+  AdminRow,
+  AdminShell,
+  adminNoIndex,
+  smallBtn,
+} from "@/components/AdminShell";
 import { listRoles } from "@/lib/admin-lists.functions";
 import { setUserRole } from "@/lib/admin.functions";
 import { dateTime } from "@/lib/format";
@@ -77,7 +84,9 @@ function AdminRoles() {
                   <button
                     type="button"
                     className={smallBtn}
-                    onClick={() => mutation.mutate({ userId: row.user_id, role: row.role, grant: false })}
+                    onClick={() =>
+                      mutation.mutate({ userId: row.user_id, role: row.role, grant: false })
+                    }
                     disabled={mutation.isPending}
                   >
                     Remover

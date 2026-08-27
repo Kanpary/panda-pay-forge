@@ -72,8 +72,8 @@ function AdminUsers() {
                 }
                 subtitle={
                   <>
-                    {row.email} • {row.tipo_conta} • Saldo: {brl(row.saldo)} • Bônus: {brl(row.saldo_bonus)} •{" "}
-                    {dateTime(row.created_at)}
+                    {row.email} • {row.tipo_conta} • Saldo: {brl(row.saldo)} • Bônus:{" "}
+                    {brl(row.saldo_bonus)} • {dateTime(row.created_at)}
                   </>
                 }
                 right={

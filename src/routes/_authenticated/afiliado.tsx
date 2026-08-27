@@ -17,7 +17,10 @@ export const Route = createFileRoute("/_authenticated/afiliado")({
   head: () => ({
     meta: [
       { title: "Área do afiliado — PandaPix" },
-      { name: "description", content: "Compartilhe seu link, acompanhe indicados e saque suas comissões." },
+      {
+        name: "description",
+        content: "Compartilhe seu link, acompanhe indicados e saque suas comissões.",
+      },
       { property: "og:title", content: "Área do afiliado — PandaPix" },
       { property: "og:description", content: "Ganhe comissão por cada jogador indicado." },
     ],
@@ -133,7 +136,10 @@ function AfiliadoPage() {
       <section className="mt-4 rounded-2xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">Sacar comissão</h2>
         <div className="mt-3 space-y-3">
-          <Field label="Valor" hint={`Chave Pix usada: ${profile?.pix_key || "cadastre na tela de saque"}`}>
+          <Field
+            label="Valor"
+            hint={`Chave Pix usada: ${profile?.pix_key || "cadastre na tela de saque"}`}
+          >
             <input
               type="number"
               min={1}
@@ -160,7 +166,10 @@ function AfiliadoPage() {
             <p className="text-xs text-muted-foreground">Nenhuma comissão ainda.</p>
           ) : (
             (commissionsQuery.data ?? []).map((c) => (
-              <div key={c.id} className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2">
+              <div
+                key={c.id}
+                className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2"
+              >
                 <div>
                   <p className="text-sm font-semibold">
                     {brl(c.amount)} · {c.tipo.toUpperCase()}

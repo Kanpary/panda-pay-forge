@@ -63,8 +63,9 @@ function AdminAffiliates() {
                 }
                 subtitle={
                   <>
-                    Indicados: {row.indicados} • CPA: {brl(row.comissao_cpa)} • Revshare: {row.comissao_revshare}% •
-                    Saldo comissão: {brl(row.saldo_comissao)} • {dateTime(row.created_at)}
+                    Indicados: {row.indicados} • CPA: {brl(row.comissao_cpa)} • Revshare:{" "}
+                    {row.comissao_revshare}% • Saldo comissão: {brl(row.saldo_comissao)} •{" "}
+                    {dateTime(row.created_at)}
                   </>
                 }
               />
