@@ -10,7 +10,10 @@ export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
       { title: "Recuperar senha — PandaPix" },
-      { name: "description", content: "Receba um link por e-mail para redefinir a senha da sua conta PandaPix." },
+      {
+        name: "description",
+        content: "Receba um link por e-mail para redefinir a senha da sua conta PandaPix.",
+      },
       { property: "og:title", content: "Recuperar senha — PandaPix" },
       { property: "og:description", content: "Enviamos um link para você criar uma nova senha." },
     ],

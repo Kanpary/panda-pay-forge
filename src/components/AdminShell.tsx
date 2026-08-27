@@ -36,7 +36,12 @@ export function AdminShell({
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-accent/15 text-lg">🛠️</span>
+            <span
+              className="grid size-9 place-items-center rounded-xl bg-accent/15 text-lg"
+              aria-hidden="true"
+            >
+              Admin
+            </span>
             <span className="text-sm font-bold tracking-tight">PandaPix Admin</span>
           </div>
           <Link
@@ -51,7 +56,7 @@ export function AdminShell({
             {adminNav.map((item) => (
               <Link
                 key={item.to}
-                to={item.to as any}
+                to={item.to}
                 activeOptions={{ exact: item.to === "/admin" }}
                 activeProps={{ className: "bg-primary/15 text-primary" }}
                 inactiveProps={{ className: "text-muted-foreground" }}
@@ -67,18 +72,18 @@ export function AdminShell({
       <div className="mx-auto flex max-w-6xl gap-6 px-4 py-5">
         <aside className="hidden w-56 shrink-0 md:block">
           <nav className="sticky top-24 space-y-1">
-          {adminNav.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to as any}
-              activeOptions={{ exact: item.to === "/admin" }}
-              activeProps={{ className: "bg-primary/15 text-primary" }}
-              inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
-              className="block rounded-lg px-3 py-2 text-sm font-medium"
-            >
-              {item.label}
-            </Link>
-          ))}
+            {adminNav.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                activeOptions={{ exact: item.to === "/admin" }}
+                activeProps={{ className: "bg-primary/15 text-primary" }}
+                inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+                className="block rounded-lg px-3 py-2 text-sm font-medium"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </aside>
 

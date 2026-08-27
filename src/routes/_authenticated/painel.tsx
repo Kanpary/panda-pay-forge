@@ -12,7 +12,10 @@ export const Route = createFileRoute("/_authenticated/painel")({
   head: () => ({
     meta: [
       { title: "Meu painel — PandaPix" },
-      { name: "description", content: "Veja saldo, bônus, depósitos, saques e rodadas da sua conta PandaPix." },
+      {
+        name: "description",
+        content: "Veja saldo, bônus, depósitos, saques e rodadas da sua conta PandaPix.",
+      },
       { property: "og:title", content: "Meu painel — PandaPix" },
       { property: "og:description", content: "Saldo, histórico e atalhos de depósito e saque." },
     ],
@@ -68,7 +71,9 @@ function PainelPage() {
   return (
     <AppLayout>
       <section className="panda-gradient rounded-2xl border border-border p-4">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">Olá, {profile?.nome ?? "jogador"}</p>
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+          Olá, {profile?.nome ?? "jogador"}
+        </p>
         <p className="mt-1 text-3xl font-extrabold text-primary">{brl(profile?.saldo)}</p>
         <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
           <span>Bônus: {brl(profile?.saldo_bonus)}</span>

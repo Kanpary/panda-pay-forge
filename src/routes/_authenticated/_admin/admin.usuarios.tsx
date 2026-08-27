@@ -72,14 +72,14 @@ function AdminUsers() {
                 }
                 subtitle={
                   <>
-                    {row.email} • {row.tipo_conta} • Saldo: {brl(row.saldo)} • Bônus: {brl(row.saldo_bonus)} •{" "}
-                    {dateTime(row.created_at)}
+                    {row.email} • {row.tipo_conta} • Saldo: {brl(row.saldo)} • Bônus:{" "}
+                    {brl(row.saldo_bonus)} • {dateTime(row.created_at)}
                   </>
                 }
                 right={
                   <Link
-                    to={"/admin/usuarios/$id" as any}
-                    params={{ id: row.id } as any}
+                    to="/admin/usuarios/$id"
+                    params={{ id: row.id }}
                     className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground"
                   >
                     Editar

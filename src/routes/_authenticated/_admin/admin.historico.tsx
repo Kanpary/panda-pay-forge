@@ -68,8 +68,8 @@ function AdminGameHistory() {
                 }
                 subtitle={
                   <>
-                    Ganho: {brl(row.ganho)} • Resultado: {row.resultado ?? "-"} • Jogador: {row.email ?? row.user_id} •{" "}
-                    {dateTime(row.created_at)}
+                    Ganho: {brl(row.ganho)} • Resultado: {row.resultado ?? "-"} • Jogador:{" "}
+                    {row.email ?? row.user_id} • {dateTime(row.created_at)}
                   </>
                 }
               />

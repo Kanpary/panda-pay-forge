@@ -4,7 +4,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminCard, AdminEmpty, AdminRow, AdminShell, adminNoIndex, smallBtn, smallBtnDanger, statusFilters } from "@/components/AdminShell";
+import {
+  AdminCard,
+  AdminEmpty,
+  AdminRow,
+  AdminShell,
+  adminNoIndex,
+  smallBtn,
+  smallBtnDanger,
+  statusFilters,
+} from "@/components/AdminShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { listCommissions } from "@/lib/admin-lists.functions";
 import { decideCommission } from "@/lib/admin.functions";
@@ -84,8 +93,8 @@ function AdminCommissions() {
                 }
                 subtitle={
                   <>
-                    Afiliado: {row.afiliado ?? row.affiliate_id} • Indicado: {row.indicado ?? row.referred_user_id} •{" "}
-                    {dateTime(row.created_at)}
+                    Afiliado: {row.afiliado ?? row.affiliate_id} • Indicado:{" "}
+                    {row.indicado ?? row.referred_user_id} • {dateTime(row.created_at)}
                     {row.released_at ? ` • liberado em ${dateTime(row.released_at)}` : null}
                   </>
                 }

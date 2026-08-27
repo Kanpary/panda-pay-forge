@@ -41,7 +41,9 @@ function Landing() {
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         <div className="flex items-center gap-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-primary/15 text-lg">🐼</span>
+          <span className="grid size-9 place-items-center rounded-xl bg-primary/15 text-lg">
+            🐼
+          </span>
           <span className="text-base font-bold tracking-tight">PandaPix</span>
         </div>
         <Link

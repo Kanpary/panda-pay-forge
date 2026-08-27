@@ -68,7 +68,11 @@ export const listCommissions = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     const ids = [
-      ...new Set((rows ?? []).flatMap((r) => [r.affiliate_id, r.referred_user_id].filter(Boolean) as string[])),
+      ...new Set(
+        (rows ?? []).flatMap(
+          (r) => [r.affiliate_id, r.referred_user_id].filter(Boolean) as string[],
+        ),
+      ),
     ];
     const { data: people } = ids.length
       ? await context.supabase.from("profiles").select("id, nome, email").in("id", ids)

@@ -71,7 +71,10 @@ function AdminRtp() {
   });
 
   return (
-    <AdminShell title="RTP, limites e senha" description="Configure o jogo e a senha da conta admin.">
+    <AdminShell
+      title="RTP, limites e senha"
+      description="Configure o jogo e a senha da conta admin."
+    >
       <AdminCard title="RTP e limites de aposta">
         {query.isLoading ? (
           <p className="text-xs text-muted-foreground">Carregando…</p>
@@ -101,7 +104,9 @@ function AdminRtp() {
                 step="0.01"
                 min="0"
                 value={game.min_bet}
-                onChange={(event) => setGame((g) => ({ ...g, min_bet: Number(event.target.value) }))}
+                onChange={(event) =>
+                  setGame((g) => ({ ...g, min_bet: Number(event.target.value) }))
+                }
               />
             </Field>
             <Field label="Aposta máxima (R$)">
@@ -111,7 +116,9 @@ function AdminRtp() {
                 step="0.01"
                 min="0"
                 value={game.max_bet}
-                onChange={(event) => setGame((g) => ({ ...g, max_bet: Number(event.target.value) }))}
+                onChange={(event) =>
+                  setGame((g) => ({ ...g, max_bet: Number(event.target.value) }))
+                }
               />
             </Field>
             <div className="sm:col-span-3">

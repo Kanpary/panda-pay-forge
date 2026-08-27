@@ -10,7 +10,10 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Entrar — PandaPix" },
-      { name: "description", content: "Acesse sua conta PandaPix para jogar, depositar e sacar via Pix." },
+      {
+        name: "description",
+        content: "Acesse sua conta PandaPix para jogar, depositar e sacar via Pix.",
+      },
       { property: "og:title", content: "Entrar — PandaPix" },
       { property: "og:description", content: "Acesse sua conta PandaPix." },
     ],

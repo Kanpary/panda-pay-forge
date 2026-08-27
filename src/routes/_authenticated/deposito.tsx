@@ -27,13 +27,19 @@ const quick = [20, 30, 50, 100, 200, 500];
 
 function DepositoPage() {
   const [amount, setAmount] = useState(30);
+  const [pixQrCode, setPixQrCode] = useState<string | null>(null);
+  const [pixTransactionId, setPixTransactionId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const createDepositFn = useServerFn(createDeposit);
 
   const settingsQuery = useQuery({
     queryKey: ["settings", "gateway-public"],
     queryFn: async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "gateway").maybeSingle();
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "gateway")
+        .maybeSingle();
       return (data?.value ?? {}) as Record<string, number>;
     },
   });
@@ -53,8 +59,10 @@ function DepositoPage() {
 
   const mutation = useMutation({
     mutationFn: async () => createDepositFn({ data: { amount } }),
-    onSuccess: () => {
-      toast.success("Depósito criado! Aguardando confirmação do pagamento.");
+    onSuccess: (deposit) => {
+      setPixQrCode(deposit.qrcode ?? null);
+      setPixTransactionId(deposit.transactionId ?? null);
+      toast.success("QR Code Pix criado. Faça o pagamento para liberar o saldo.");
       void queryClient.invalidateQueries({ queryKey: ["my-deposits-full"] });
       void queryClient.invalidateQueries({ queryKey: ["my-deposits"] });
     },
@@ -106,10 +114,25 @@ function DepositoPage() {
           {mutation.isPending ? "Gerando..." : `Depositar ${brl(amount)}`}
         </button>
 
-        <p className="mt-3 rounded-xl bg-secondary p-3 text-[11px] text-muted-foreground">
-          O QR Code Pix automático entra em operação na integração com o gateway. Enquanto isso, o depósito
-          fica pendente e é confirmado pela equipe.
-        </p>
+        {pixQrCode ? (
+          <div className="mt-4 rounded-xl bg-secondary p-4 text-center">
+            <p className="text-sm font-bold">Pague para confirmar seu depósito</p>
+            <img
+              src={pixQrCode.startsWith("data:") ? pixQrCode : `data:image/png;base64,${pixQrCode}`}
+              alt="QR Code Pix para pagamento"
+              className="mx-auto mt-3 size-52 rounded-lg bg-background p-2"
+            />
+            {pixTransactionId ? (
+              <p className="mt-2 break-all text-[10px] text-muted-foreground">
+                ID: {pixTransactionId}
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <p className="mt-3 rounded-xl bg-secondary p-3 text-[11px] text-muted-foreground">
+            O QR Code Pix será gerado automaticamente pela OnixPay.
+          </p>
+        )}
       </section>
 
       <section className="mt-4 rounded-2xl border border-border bg-card p-4">
@@ -119,7 +142,10 @@ function DepositoPage() {
             <p className="text-xs text-muted-foreground">Nenhum depósito ainda.</p>
           ) : (
             (listQuery.data ?? []).map((d) => (
-              <div key={d.id} className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2">
+              <div
+                key={d.id}
+                className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2"
+              >
                 <div>
                   <p className="text-sm font-semibold">{brl(d.amount)}</p>
                   <p className="text-[11px] text-muted-foreground">{dateTime(d.created_at)}</p>

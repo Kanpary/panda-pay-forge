@@ -51,7 +51,9 @@ export const decideDeposit = createServerFn({ method: "POST" })
       .eq("key", "bonus")
       .maybeSingle();
     const bonusCfg = (bonusSetting?.value ?? {}) as Record<string, number | boolean>;
-    const bonus = bonusCfg["ativo"] ? (Number(deposit.amount) * Number(bonusCfg["percentual"] ?? 0)) / 100 : 0;
+    const bonus = bonusCfg["ativo"]
+      ? (Number(deposit.amount) * Number(bonusCfg["percentual"] ?? 0)) / 100
+      : 0;
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
@@ -192,7 +194,9 @@ export const decideCommission = createServerFn({ method: "POST" })
         .single();
       await supabaseAdmin
         .from("profiles")
-        .update({ saldo_comissao: Number(profile?.saldo_comissao ?? 0) + Number(commission.amount) })
+        .update({
+          saldo_comissao: Number(profile?.saldo_comissao ?? 0) + Number(commission.amount),
+        })
         .eq("id", commission.affiliate_id);
     }
 
@@ -224,13 +228,11 @@ export const updateUser = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { id, ...patch } = data;
-    const cleanPatch = Object.fromEntries(
-      Object.entries(patch).filter(([, v]) => v !== undefined),
-    );
+    const cleanPatch = Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined));
     if (Object.keys(cleanPatch).length === 0) return { ok: true };
     const { error } = await supabaseAdmin
       .from("profiles")
-      .update(cleanPatch as any)
+      .update(cleanPatch as never)
       .eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -336,7 +338,9 @@ export const saveAppSetting = createServerFn({ method: "POST" })
 
 const gameSettingSchema = z.object({
   items: z
-    .array(z.object({ slug: z.string().trim().min(1).max(40), value: z.number().min(0).max(1000000) }))
+    .array(
+      z.object({ slug: z.string().trim().min(1).max(40), value: z.number().min(0).max(1000000) }),
+    )
     .max(20),
   userId: z.string().uuid().nullish(),
 });
@@ -350,13 +354,15 @@ export const saveGameSettings = createServerFn({ method: "POST" })
 
     for (const item of data.items) {
       const query = supabaseAdmin.from("game_settings").select("id").eq("slug", item.slug);
-      const { data: existing } = await (data.userId
-        ? query.eq("user_id", data.userId)
-        : query.is("user_id", null)
+      const { data: existing } = await (
+        data.userId ? query.eq("user_id", data.userId) : query.is("user_id", null)
       ).maybeSingle();
 
       if (existing) {
-        await supabaseAdmin.from("game_settings").update({ value: item.value }).eq("id", existing.id);
+        await supabaseAdmin
+          .from("game_settings")
+          .update({ value: item.value })
+          .eq("id", existing.id);
       } else {
         await supabaseAdmin
           .from("game_settings")

@@ -4,7 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminCard, AdminEmpty, AdminRow, AdminShell, adminNoIndex, smallBtn } from "@/components/AdminShell";
+import {
+  AdminCard,
+  AdminEmpty,
+  AdminRow,
+  AdminShell,
+  adminNoIndex,
+  smallBtn,
+} from "@/components/AdminShell";
 import { Field, inputClass } from "@/components/AuthShell";
 import { listDemoAccounts } from "@/lib/admin-lists.functions";
 import { createDemoAccount } from "@/lib/admin.functions";

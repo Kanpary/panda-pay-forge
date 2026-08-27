@@ -15,7 +15,10 @@ export const Route = createFileRoute("/_authenticated/_admin/admin/gateway")({
 
 function AdminGateway() {
   return (
-    <AdminShell title="Gateway de pagamento" description="Configure as credenciais e comportamento do Pix.">
+    <AdminShell
+      title="Gateway de pagamento"
+      description="Configure as credenciais e comportamento do Pix."
+    >
       <AdminSettingsForm
         settingKey="gateway"
         title="Configurações do gateway"

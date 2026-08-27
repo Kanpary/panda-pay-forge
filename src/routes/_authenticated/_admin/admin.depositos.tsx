@@ -4,7 +4,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminCard, AdminEmpty, AdminRow, AdminShell, adminNoIndex, smallBtn, smallBtnDanger, statusFilters } from "@/components/AdminShell";
+import {
+  AdminCard,
+  AdminEmpty,
+  AdminRow,
+  AdminShell,
+  adminNoIndex,
+  smallBtn,
+  smallBtnDanger,
+  statusFilters,
+} from "@/components/AdminShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { listDeposits } from "@/lib/admin-lists.functions";
 import { decideDeposit } from "@/lib/admin.functions";
@@ -83,7 +92,8 @@ function AdminDeposits() {
                 }
                 subtitle={
                   <>
-                    {row.nome ?? row.email ?? row.user_id} • {row.gateway} • {dateTime(row.created_at)}
+                    {row.nome ?? row.email ?? row.user_id} • {row.gateway} •{" "}
+                    {dateTime(row.created_at)}
                     {row.paid_at ? ` • pago em ${dateTime(row.paid_at)}` : null}
                   </>
                 }
