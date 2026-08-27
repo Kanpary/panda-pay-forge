@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Jogo do Panda - PandaPix</title>
+    <meta name="description" content="PandaPix oficial: jogo do panda que paga. Jogue Panda Pix, acumule saldo e saque via Pix na plataforma PandaPix." />
+    <meta name="keywords" content="PandaPix, Panda Pix, Jogo do panda, Jogo do panda que paga, Panda do pix, Jogo panda pix, Panda pix jogo, Panda pix oficial, Jogo do ursinho panda, Panda que da dinheiro, Panda pix paga mesmo, Jogo do panda pix, Panda pix plataforma" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://pandapix.online/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PandaPix Oficial | Jogo do Panda que Paga" />
+    <meta property="og:description" content="Entre no PandaPix oficial e jogue o jogo do panda para ganhar e sacar via Pix." />
+    <meta property="og:url" content="https://pandapix.online/" />
+    <meta property="og:site_name" content="PandaPix" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PandaPix Oficial | Jogo do Panda que Paga" />
+    <meta name="twitter:description" content="Jogo do panda que paga: conheça a plataforma PandaPix e jogue online." />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="main-0egTJVN_.css"> </head>
+
+<body>
+    <div id="gameArea">
+        <audio id="audioStart" src="abertura.mp3" loop></audio>
+        <audio id="audioColeta" src="coleta.mp3"></audio>
+        <audio id="audioGameOver" src="gameover.mp3"></audio>
+
+        <div class="bamboo" role="img" aria-label="Bambu"></div>
+        <img id="panda" class="panda left" src="1.png" alt="Panda">
+        <div id="caixaMagica" style="display: none;"><div class="emojiCaixa">🎁</div></div>
+
+        <div id="saldo">Saldo: R$ 0,00</div>
+        
+        <div id="topRightSlot" class="topRightSlot">
+            <button type="button" id="btnMenuTopo" class="modalBtnMenu btnMenuTopo">📋 Menu</button>
+            
+            <div id="menuTopoDropdown" class="menuTopoDropdown" style="display:none;">
+                <div class="menuTopoPerfil">
+                    <span class="menuTopoPerfilIcon">👤</span>
+                    <span class="menuTopoPerfilId" id="menuTopoPerfilId"> #----</span>
+                </div>
+                <button type="button" id="menuTopoDeposito" class="modalBtnDepositoSaque">💰 Depósito</button>
+                <button type="button" id="menuTopoSaque" class="modalBtnDepositoSaque">💸 Saque</button>
+                <button type="button" id="menuTopoHistorico" class="modalBtnDepositoSaque">📜 Histórico</button>
+                <button type="button" id="menuTopoAfiliados" class="modalBtnDepositoSaque">🎁 Indique e Ganhe</button>
+                <button type="button" id="menuTopoSair" class="modalBtnDepositoSaque modalBtnSair">🚪 Sair</button>
+            </div>
+
+            <div id="timer" style="display: none;">Tempo: 0s</div>
+        </div>
+
+        <button id="ctaSaqueTopo" style="display:none;">💸 Sacar Pix</button>
+
+        <div id="modal">
+            <div id="modalContent">
+
+                <div id="modalAuth" class="modalBox modalAuth" style="display: none;">
+                    <img src="banner1.png" alt="Banner" class="modalAuthBanner" onerror="this.style.display='none'">
+                    <div class="modalAuthContent">
+                        <div class="modalAuthTabs">
+                            <button type="button" class="modalAuthTab active" data-tab="login">Entrar</button>
+                            <button type="button" class="modalAuthTab" data-tab="register">Cadastrar</button>
+                        </div>
+                        <p id="modalAuthError" class="modalAuthError" style="display:none;"></p>
+                        
+                        <form id="formLogin" class="modalAuthForm">
+                            <input type="tel" id="authTelefoneLogin" class="modalAuthInput" placeholder="Celular (apenas números)" required autocomplete="tel">
+                            <input type="password" id="authSenhaLogin" class="modalAuthInput" placeholder="Senha" required autocomplete="current-password" minlength="6">
+                            <button type="submit" class="modalBtnInicio">Entrar</button>
+                        </form>
+                        
+                        <form id="formRegister" class="modalAuthForm" style="display:none;">
+                            <input type="text" id="authNomeRegister" class="modalAuthInput" placeholder="Seu nome" required autocomplete="name">
+                            <input type="tel" id="authTelefoneRegister" class="modalAuthInput" placeholder="Celular (apenas números)" required autocomplete="tel">
+                            <input type="text" id="authCpfRegister" class="modalAuthInput" placeholder="CPF (apenas números)" required maxlength="11">
+                            <input type="password" id="authSenhaRegister" class="modalAuthInput" placeholder="Senha (mín. 6 caracteres)" required autocomplete="new-password" minlength="6">
+                            <button type="submit" class="modalBtnInicio">Cadastrar</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="modalInicio" class="modalBox modalInicio" style="display: none;">
+                    <div class="modalInicioBotoesTopo">
+                        <button type="button" id="btnDepositoInicio" class="modalBtnDepositoSaque">💰 Depósito</button>
+                        <button type="button" id="btnSaqueInicio" class="modalBtnDepositoSaque">💸 Saque</button>
+                    </div>
+                    <img src="logopandapix.png" alt="Logo PandaPix" class="pandaTop">
+                    <div class="resultCard">
+                        <div class="modalHeadline">💸 Ganhe até <span class="shimmer-text">R$ 1.447</span> por rodada jogando com o Panda!</div>
+                        <p class="modalModoNome">Modo: <span id="pandaModoNomeDisplay">Clássico</span></p>
+
+                        <div class="winner-feed" id="winnerFeed" aria-live="polite">
+                            <div class="winner-feed-track" id="winnerFeedTrack"></div>
+                        </div>
+
+                        <div id="wrapAposta" class="modalApostaWrap">
+                            <label for="valorAposta">Valor da aposta (R$):</label>
+                            <input type="number" id="valorAposta" min="1" max="50" step="0.01" placeholder="0,00">
+                            <div class="modalApostaBtns">
+                                <button type="button" class="modalApostaBtn" onclick="document.getElementById('valorAposta').value=1">R$ 1</button>
+                                <button type="button" class="modalApostaBtn" onclick="document.getElementById('valorAposta').value=2">R$ 2</button>
+                                <button type="button" class="modalApostaBtn" onclick="document.getElementById('valorAposta').value=3">R$ 3</button>
+                                <button type="button" class="modalApostaBtn" onclick="document.getElementById('valorAposta').value=5">R$ 5</button>
+                            </div>
+                            <p id="apostaErro" class="modalApostaErro" style="display:none;"></p>
+                        </div>
+
+                        <div class="modalInstrucoes" style="margin-top: 15px;">
+                            <div>🌸 Colete flores, folhas e presentes</div>
+                            <div>🌵 Desvie dos espinhos</div>
+                            
+                            <div>👆 Toque nos lados para mover</div>
+                        </div>
+                    </div>
+                    
+                    <div id="modalText" class="modalCountdown"></div>
+                    <button type="button" class="modalBtnInicio" data-start-countdown onclick="if(typeof startCountdown === 'function') startCountdown()">COMEÇAR AGORA 💰</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="game.js"></script>
+
+    <script>
+        // Intercepta a checagem de saldo para atualizar a ID no front
+        document.addEventListener('DOMContentLoaded', () => {
+            const originalGetBalance = window.getBalance;
+            if(typeof originalGetBalance === 'function') {
+                window.getBalance = async function() {
+                    const res = await originalGetBalance.apply(this, arguments);
+                    if (res && res.success && res.data && res.data.user_id) {
+                        const idEl = document.getElementById('menuTopoPerfilId');
+                        if (idEl) idEl.textContent = ' #' + res.data.user_id;
+                    }
+                    return res;
+                };
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Gamepad2 } from "lucide-react";
-
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,22 +54,15 @@ function JogoPage() {
         </div>
       </section>
 
-      <section className="mt-4 rounded-2xl border border-dashed border-border bg-card p-6 text-center">
-        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary">
-          <Gamepad2 className="size-7" />
-        </span>
-        <h2 className="mt-3 text-base font-bold">O jogo entra em breve</h2>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-          Estamos finalizando o motor de rodadas. Seu saldo já está pronto e as apostas serão liberadas
-          nesta tela.
-        </p>
-        <button
-          type="button"
-          disabled
-          className="mt-4 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground opacity-60"
-        >
-          Apostar — Em breve
-        </button>
+      <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+        <h2 className="sr-only">Jogo PandaPix</h2>
+        <iframe
+          title="Jogo do PandaPix"
+          src="/game/index.html"
+          className="block h-[min(720px,calc(100vh-12rem))] min-h-[560px] w-full border-0"
+          loading="eager"
+          allow="autoplay"
+        />
       </section>
 
       <section className="mt-4 rounded-2xl border border-border bg-card p-4">
