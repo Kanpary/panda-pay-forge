@@ -34,7 +34,7 @@ function RegisterPage() {
   const { ref } = Route.useSearch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  
   const [form, setForm] = useState({
     nome: "",
     email: "",
