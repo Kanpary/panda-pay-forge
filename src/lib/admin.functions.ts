@@ -5,10 +5,14 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 async function assertAdmin(context: { supabase: unknown; userId: string }) {
   const supabase = context.supabase as {
-    rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    auth: {
+      getUser: () => Promise<{ data: { user: { email?: string | null } | null }; error: unknown }>;
+    };
   };
-  const { data } = await supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
-  if (data !== true) throw new Error("Acesso restrito a administradores.");
+  const { data, error } = await supabase.auth.getUser();
+  if (error || data.user?.email?.trim().toLowerCase() !== "detroit.system@gmail.com") {
+    throw new Error("Acesso restrito a administradores.");
+  }
 }
 
 export const adminOverview = createServerFn({ method: "GET" })
@@ -316,6 +320,41 @@ export const createDemoAccount = createServerFn({ method: "POST" })
       .upsert({ user_id: userId, role: "user" }, { onConflict: "user_id,role" });
 
     return { ok: true, id: userId };
+  });
+
+const playerLimitsSchema = z
+  .object({
+    userId: z.string().uuid(),
+    rtp: z.number().min(0).max(100),
+    min_bet: z.number().positive(),
+    max_bet: z.number().positive(),
+    daily_bet_limit: z.number().min(0),
+    daily_loss_limit: z.number().min(0),
+    enabled: z.boolean(),
+  })
+  .refine((value) => value.max_bet >= value.min_bet, { message: "Aposta máxima inválida" });
+
+export const savePlayerGameLimits = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => playerLimitsSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("player_game_limits").upsert(
+      {
+        user_id: data.userId,
+        rtp: data.rtp,
+        min_bet: data.min_bet,
+        max_bet: data.max_bet,
+        daily_bet_limit: data.daily_bet_limit,
+        daily_loss_limit: data.daily_loss_limit,
+        enabled: data.enabled,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 const settingsSchema = z.object({

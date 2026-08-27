@@ -120,6 +120,12 @@ export const getUserDetail = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    const { data: limits } = await context.supabase
+      .from("player_game_limits")
+      .select("rtp, min_bet, max_bet, daily_bet_limit, daily_loss_limit, enabled, updated_at")
+      .eq("user_id", data.id)
+      .maybeSingle();
+
     const { data: roles } = await context.supabase
       .from("user_roles")
       .select("role")
@@ -139,6 +145,7 @@ export const getUserDetail = createServerFn({ method: "POST" })
 
     return {
       profile,
+      limits,
       roles: (roles ?? []).map((r) => r.role),
       deposits: deposits ?? [],
       withdrawals: withdrawals ?? [],
