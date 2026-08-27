@@ -21,6 +21,7 @@ import { Route as AuthenticatedDepositoRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedJogoRouteImport } from './routes/_authenticated/jogo'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedSaqueRouteImport } from './routes/_authenticated/saque'
+import { Route as ApiGameBetRouteImport } from './routes/api/game/bet'
 import { Route as ApiGameConfigRouteImport } from './routes/api/game/config'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminAfiliadosRouteImport } from './routes/_authenticated/_admin/admin.afiliados'
@@ -95,6 +96,11 @@ const AuthenticatedSaqueRoute = AuthenticatedSaqueRouteImport.update({
   id: '/saque',
   path: '/saque',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiGameBetRoute = ApiGameBetRouteImport.update({
+  id: '/api/game/bet',
+  path: '/api/game/bet',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGameConfigRoute = ApiGameConfigRouteImport.update({
   id: '/api/game/config',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/jogo': typeof AuthenticatedJogoRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
   '/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/jogo': typeof AuthenticatedJogoRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
   '/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/_authenticated/jogo': typeof AuthenticatedJogoRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/saque': typeof AuthenticatedSaqueRoute
+  '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
   '/_authenticated/_admin/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/_authenticated/_admin/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/jogo'
     | '/painel'
     | '/saque'
+    | '/api/game/bet'
     | '/api/game/config'
     | '/admin/afiliados'
     | '/admin/aparencia'
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/jogo'
     | '/painel'
     | '/saque'
+    | '/api/game/bet'
     | '/api/game/config'
     | '/admin/afiliados'
     | '/admin/aparencia'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/_authenticated/jogo'
     | '/_authenticated/painel'
     | '/_authenticated/saque'
+    | '/api/game/bet'
     | '/api/game/config'
     | '/_authenticated/_admin/admin/afiliados'
     | '/_authenticated/_admin/admin/aparencia'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiGameBetRoute: typeof ApiGameBetRoute
   ApiGameConfigRoute: typeof ApiGameConfigRoute
 }
 
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/saque'
       preLoaderRoute: typeof AuthenticatedSaqueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/game/bet': {
+      id: '/api/game/bet'
+      path: '/api/game/bet'
+      fullPath: '/api/game/bet'
+      preLoaderRoute: typeof ApiGameBetRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/game/config': {
       id: '/api/game/config'
@@ -668,6 +688,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiGameBetRoute: ApiGameBetRoute,
   ApiGameConfigRoute: ApiGameConfigRoute,
 }
 export const routeTree = rootRouteImport
