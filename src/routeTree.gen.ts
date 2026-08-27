@@ -23,6 +23,7 @@ import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedSaqueRouteImport } from './routes/_authenticated/saque'
 import { Route as ApiGameBetRouteImport } from './routes/api/game/bet'
 import { Route as ApiGameConfigRouteImport } from './routes/api/game/config'
+import { Route as ApiGameResultRouteImport } from './routes/api/game/result'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminAfiliadosRouteImport } from './routes/_authenticated/_admin/admin.afiliados'
 import { Route as AuthenticatedAdminAdminAparenciaRouteImport } from './routes/_authenticated/_admin/admin.aparencia'
@@ -105,6 +106,11 @@ const ApiGameBetRoute = ApiGameBetRouteImport.update({
 const ApiGameConfigRoute = ApiGameConfigRouteImport.update({
   id: '/api/game/config',
   path: '/api/game/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGameResultRoute = ApiGameResultRouteImport.update({
+  id: '/api/game/result',
+  path: '/api/game/result',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminAdminIndexRoute =
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/saque': typeof AuthenticatedSaqueRoute
   '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
+  '/api/game/result': typeof ApiGameResultRoute
   '/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
   '/admin/comissoes': typeof AuthenticatedAdminAdminComissoesRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/saque': typeof AuthenticatedSaqueRoute
   '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
+  '/api/game/result': typeof ApiGameResultRoute
   '/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
   '/admin/comissoes': typeof AuthenticatedAdminAdminComissoesRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/_authenticated/saque': typeof AuthenticatedSaqueRoute
   '/api/game/bet': typeof ApiGameBetRoute
   '/api/game/config': typeof ApiGameConfigRoute
+  '/api/game/result': typeof ApiGameResultRoute
   '/_authenticated/_admin/admin/afiliados': typeof AuthenticatedAdminAdminAfiliadosRoute
   '/_authenticated/_admin/admin/aparencia': typeof AuthenticatedAdminAdminAparenciaRoute
   '/_authenticated/_admin/admin/comissoes': typeof AuthenticatedAdminAdminComissoesRoute
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/saque'
     | '/api/game/bet'
     | '/api/game/config'
+    | '/api/game/result'
     | '/admin/afiliados'
     | '/admin/aparencia'
     | '/admin/comissoes'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/saque'
     | '/api/game/bet'
     | '/api/game/config'
+    | '/api/game/result'
     | '/admin/afiliados'
     | '/admin/aparencia'
     | '/admin/comissoes'
@@ -363,6 +374,7 @@ export interface FileRouteTypes {
     | '/_authenticated/saque'
     | '/api/game/bet'
     | '/api/game/config'
+    | '/api/game/result'
     | '/_authenticated/_admin/admin/afiliados'
     | '/_authenticated/_admin/admin/aparencia'
     | '/_authenticated/_admin/admin/comissoes'
@@ -389,6 +401,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiGameBetRoute: typeof ApiGameBetRoute
   ApiGameConfigRoute: typeof ApiGameConfigRoute
+  ApiGameResultRoute: typeof ApiGameResultRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       path: '/api/game/config'
       fullPath: '/api/game/config'
       preLoaderRoute: typeof ApiGameConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/game/result': {
+      id: '/api/game/result'
+      path: '/api/game/result'
+      fullPath: '/api/game/result'
+      preLoaderRoute: typeof ApiGameResultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_admin/admin/': {
@@ -690,6 +710,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ApiGameBetRoute: ApiGameBetRoute,
   ApiGameConfigRoute: ApiGameConfigRoute,
+  ApiGameResultRoute: ApiGameResultRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

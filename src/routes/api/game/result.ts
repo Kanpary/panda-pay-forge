@@ -30,7 +30,7 @@ export const Route = createFileRoute("/api/game/result")({
         const { data, error } = await auth.supabase.rpc("game_settle_bet", {
           _session_id: parsed.data.session_id,
           _ganho: parsed.data.ganho,
-          _resultado: parsed.data.resultado ?? null,
+          ...(parsed.data.resultado ? { _resultado: parsed.data.resultado } : {}),
           _data: (parsed.data.data ?? {}) as never,
         });
         if (error) return errorResponse(error.message);
