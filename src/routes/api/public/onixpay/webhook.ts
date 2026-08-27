@@ -24,7 +24,8 @@ export const Route = createFileRoute("/api/public/onixpay/webhook")({
           return new Response("Received", { status: 200 });
         }
 
-        const { error } = await supabaseAdmin.rpc("credit_onixpay_deposit", {
+        const rpc = supabaseAdmin.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: Error | null }>;
+        const { error } = await rpc("credit_onixpay_deposit", {
           _transaction_id: payload.transactionId,
           _amount: Number(payload.amount ?? 0),
           _payload: payload,

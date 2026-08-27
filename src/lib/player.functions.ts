@@ -47,12 +47,12 @@ export const createDeposit = createServerFn({ method: "POST" })
 
     try {
       const { createPixCharge } = await import("@/lib/onixpay.server");
-      const callbackUrl = `${process.env.APP_URL ?? process.env.VITE_APP_URL ?? ""}/api/public/onixpay/webhook`;
+      const callbackUrl = `${process.env["APP_URL"] ?? process.env["VITE_APP_URL"] ?? ""}/api/public/onixpay/webhook`;
       const charge = await createPixCharge({ amount: data.amount, externalId, callbackUrl, name: profile.nome || "Cliente PandaPix", cpf: profile.cpf || "00000000000" });
       await supabaseAdmin.from("deposits").update({ metadata: charge, external_id: charge.transactionId ?? externalId }).eq("id", deposit.id);
       return { ...deposit, qrcode: charge.qrcode, transactionId: charge.transactionId ?? externalId };
     } catch (gatewayError) {
-      await supabaseAdmin.from("deposits").update({ status: "failed", metadata: { error: gatewayError instanceof Error ? gatewayError.message : "OnixPay indisponível" } }).eq("id", deposit.id);
+      await supabaseAdmin.from("deposits").update({ status: "cancelled", metadata: { error: gatewayError instanceof Error ? gatewayError.message : "OnixPay indisponível" } }).eq("id", deposit.id);
       throw new Error("Não foi possível gerar o QR Code Pix agora.");
     }
   });
@@ -115,12 +115,12 @@ export const requestWithdrawal = createServerFn({ method: "POST" })
 
     try {
       const { createPixTransfer } = await import("@/lib/onixpay.server");
-      const callbackUrl = `${process.env.APP_URL ?? process.env.VITE_APP_URL ?? ""}/api/public/onixpay/webhook`;
+      const callbackUrl = `${process.env["APP_URL"] ?? process.env["VITE_APP_URL"] ?? ""}/api/public/onixpay/webhook`;
       const transfer = await createPixTransfer({ amount: data.amount, pixType: data.pix_type, pixKey: data.pix_key, externalId: withdrawal.id, name: profile.nome || "Cliente PandaPix", cpf: profile.cpf || "00000000000", callbackUrl });
       await supabaseAdmin.from("withdrawals").update({ external_id: transfer.transactionId ?? withdrawal.id, metadata: transfer }).eq("id", withdrawal.id);
       return { ...withdrawal, external_id: transfer.transactionId ?? withdrawal.id };
     } catch (gatewayError) {
-      await supabaseAdmin.from("withdrawals").update({ status: "failed", metadata: { error: gatewayError instanceof Error ? gatewayError.message : "OnixPay indisponível" } }).eq("id", withdrawal.id);
+      await supabaseAdmin.from("withdrawals").update({ status: "rejected", metadata: { error: gatewayError instanceof Error ? gatewayError.message : "OnixPay indisponível" } }).eq("id", withdrawal.id);
       await supabaseAdmin.from("profiles").update(data.tipo === "afiliado" ? { saldo_comissao: available } : { saldo: available }).eq("id", context.userId);
       throw new Error("Não foi possível processar o saque agora.");
     }
