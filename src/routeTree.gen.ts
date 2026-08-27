@@ -39,6 +39,7 @@ import { Route as AuthenticatedAdminAdminRegrasRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminAdminRtpRouteImport } from './routes/_authenticated/_admin/admin.rtp'
 import { Route as AuthenticatedAdminAdminSaquesRouteImport } from './routes/_authenticated/_admin/admin.saques'
 import { Route as AuthenticatedAdminAdminUsuariosRouteImport } from './routes/_authenticated/_admin/admin.usuarios'
+import { Route as ApiPublicOnixpayWebhookRouteImport } from './routes/api/public/onixpay/webhook'
 import { Route as AuthenticatedAdminAdminUsuariosIdRouteImport } from './routes/_authenticated/_admin/admin.usuarios.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -203,6 +204,11 @@ const AuthenticatedAdminAdminUsuariosRoute =
     path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const ApiPublicOnixpayWebhookRoute = ApiPublicOnixpayWebhookRouteImport.update({
+  id: '/api/public/onixpay/webhook',
+  path: '/api/public/onixpay/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminAdminUsuariosIdRoute =
   AuthenticatedAdminAdminUsuariosIdRouteImport.update({
     id: '/$id',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/admin/rtp': typeof AuthenticatedAdminAdminRtpRoute
   '/admin/saques': typeof AuthenticatedAdminAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminAdminUsuariosRouteWithChildren
+  '/api/public/onixpay/webhook': typeof ApiPublicOnixpayWebhookRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
   '/admin/usuarios/$id': typeof AuthenticatedAdminAdminUsuariosIdRoute
 }
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/admin/rtp': typeof AuthenticatedAdminAdminRtpRoute
   '/admin/saques': typeof AuthenticatedAdminAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminAdminUsuariosRouteWithChildren
+  '/api/public/onixpay/webhook': typeof ApiPublicOnixpayWebhookRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
   '/admin/usuarios/$id': typeof AuthenticatedAdminAdminUsuariosIdRoute
 }
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/rtp': typeof AuthenticatedAdminAdminRtpRoute
   '/_authenticated/_admin/admin/saques': typeof AuthenticatedAdminAdminSaquesRoute
   '/_authenticated/_admin/admin/usuarios': typeof AuthenticatedAdminAdminUsuariosRouteWithChildren
+  '/api/public/onixpay/webhook': typeof ApiPublicOnixpayWebhookRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
   '/_authenticated/_admin/admin/usuarios/$id': typeof AuthenticatedAdminAdminUsuariosIdRoute
 }
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/rtp'
     | '/admin/saques'
     | '/admin/usuarios'
+    | '/api/public/onixpay/webhook'
     | '/admin/'
     | '/admin/usuarios/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -367,6 +377,7 @@ export interface FileRouteTypes {
     | '/admin/rtp'
     | '/admin/saques'
     | '/admin/usuarios'
+    | '/api/public/onixpay/webhook'
     | '/admin'
     | '/admin/usuarios/$id'
   id:
@@ -400,6 +411,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/rtp'
     | '/_authenticated/_admin/admin/saques'
     | '/_authenticated/_admin/admin/usuarios'
+    | '/api/public/onixpay/webhook'
     | '/_authenticated/_admin/admin/'
     | '/_authenticated/_admin/admin/usuarios/$id'
   fileRoutesById: FileRoutesById
@@ -415,6 +427,7 @@ export interface RootRouteChildren {
   ApiGameBetRoute: typeof ApiGameBetRoute
   ApiGameConfigRoute: typeof ApiGameConfigRoute
   ApiGameResultRoute: typeof ApiGameResultRoute
+  ApiPublicOnixpayWebhookRoute: typeof ApiPublicOnixpayWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/onixpay/webhook': {
+      id: '/api/public/onixpay/webhook'
+      path: '/api/public/onixpay/webhook'
+      fullPath: '/api/public/onixpay/webhook'
+      preLoaderRoute: typeof ApiPublicOnixpayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/_admin/admin/usuarios/$id': {
       id: '/_authenticated/_admin/admin/usuarios/$id'
       path: '/$id'
@@ -732,6 +752,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiGameBetRoute: ApiGameBetRoute,
   ApiGameConfigRoute: ApiGameConfigRoute,
   ApiGameResultRoute: ApiGameResultRoute,
+  ApiPublicOnixpayWebhookRoute: ApiPublicOnixpayWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
