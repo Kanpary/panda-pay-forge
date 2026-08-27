@@ -243,6 +243,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      player_game_limits: {
+        Row: {
+          user_id: string;
+          rtp: number;
+          min_bet: number;
+          max_bet: number;
+          daily_bet_limit: number;
+          daily_loss_limit: number;
+          enabled: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          rtp?: number;
+          min_bet?: number;
+          max_bet?: number;
+          daily_bet_limit?: number;
+          daily_loss_limit?: number;
+          enabled?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          rtp?: number;
+          min_bet?: number;
+          max_bet?: number;
+          daily_bet_limit?: number;
+          daily_loss_limit?: number;
+          enabled?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       game_settings: {
         Row: {
           created_at: string;

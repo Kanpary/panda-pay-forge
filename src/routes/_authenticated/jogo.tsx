@@ -33,8 +33,13 @@ function JogoPage() {
       );
     };
     sendSession();
-    window.addEventListener("message", sendSession);
-    return () => window.removeEventListener("message", sendSession);
+    const handleReady = (event: MessageEvent) => {
+      if (event.origin === window.location.origin && event.data?.type === "pandapix:ready") {
+        sendSession();
+      }
+    };
+    window.addEventListener("message", handleReady);
+    return () => window.removeEventListener("message", handleReady);
   }, [session?.access_token]);
 
   const historyQuery = useQuery({

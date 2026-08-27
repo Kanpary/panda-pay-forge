@@ -318,6 +318,43 @@ export const createDemoAccount = createServerFn({ method: "POST" })
     return { ok: true, id: userId };
   });
 
+const playerLimitsSchema = z
+  .object({
+    userId: z.string().uuid(),
+    rtp: z.number().min(0).max(100),
+    min_bet: z.number().positive(),
+    max_bet: z.number().positive(),
+    daily_bet_limit: z.number().min(0),
+    daily_loss_limit: z.number().min(0),
+    enabled: z.boolean(),
+  })
+  .refine((value) => value.max_bet >= value.min_bet, { message: "Aposta máxima inválida" });
+
+export const savePlayerGameLimits = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => playerLimitsSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("player_game_limits")
+      .upsert(
+        {
+          user_id: data.userId,
+          rtp: data.rtp,
+          min_bet: data.min_bet,
+          max_bet: data.max_bet,
+          daily_bet_limit: data.daily_bet_limit,
+          daily_loss_limit: data.daily_loss_limit,
+          enabled: data.enabled,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 const settingsSchema = z.object({
   key: z.enum(["gateway", "aparencia", "pixel", "afiliados", "bonus"]),
   value: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),

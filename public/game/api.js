@@ -16,6 +16,8 @@
     }
   });
 
+  window.parent.postMessage({ type: "pandapix:ready" }, window.location.origin);
+
   function getToken() {
     if (sessionToken) return sessionToken;
     try {
