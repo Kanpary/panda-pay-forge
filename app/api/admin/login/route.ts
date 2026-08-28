@@ -14,5 +14,10 @@ export async function POST(request: Request) {
   )
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error || !data.session) return NextResponse.json({ message: 'E-mail ou senha inválidos.' }, { status: 401 })
+
+  if (request.headers.get('accept')?.includes('text/html')) {
+    return NextResponse.redirect(new URL('/admin', request.url))
+  }
+
   return NextResponse.json({ session: data.session })
 }
