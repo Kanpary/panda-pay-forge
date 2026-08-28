@@ -26,20 +26,32 @@ function JogoPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    const sendSession = () => {
+    let active = true;
+
+    const sendSession = async () => {
+      // getSession can return an access token that expired while the tab was open.
+      // Refresh immediately before the iframe handshake so game API calls never
+      // receive a stale JWT and fail with "Unauthorized: invalid token".
+      const { data } = await supabase.auth.refreshSession();
+      if (!active) return;
+      const accessToken = data.session?.access_token ?? session?.access_token ?? null;
       iframeRef.current?.contentWindow?.postMessage(
-        { type: "pandapix:session", access_token: session?.access_token ?? null },
+        { type: "pandapix:session", access_token: accessToken },
         window.location.origin,
       );
     };
-    sendSession();
+
+    void sendSession();
     const handleReady = (event: MessageEvent) => {
       if (event.origin === window.location.origin && event.data?.type === "pandapix:ready") {
-        sendSession();
+        void sendSession();
       }
     };
     window.addEventListener("message", handleReady);
-    return () => window.removeEventListener("message", handleReady);
+    return () => {
+      active = false;
+      window.removeEventListener("message", handleReady);
+    };
   }, [session?.access_token]);
 
   const historyQuery = useQuery({
