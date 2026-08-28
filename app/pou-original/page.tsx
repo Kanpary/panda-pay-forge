@@ -7,10 +7,13 @@ export const metadata: Metadata = {
 
 export default function PouOriginalPage() {
   return (
-    <main className="pou-shell">
-      <link rel="stylesheet" href="/pou-original/assets/index-0BDQj2Gm.css" />
-      <div id="root" />
-      <script type="module" src="/pou-original/assets/index-DznaCJH5.js" />
+    <main className="pou-shell" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <iframe
+        title="Jogo do Pou"
+        src="/pou-game"
+        className="original-frame"
+        style={{ display: 'block', height: '100%', width: '100%', border: 0 }}
+      />
     </main>
   )
 }

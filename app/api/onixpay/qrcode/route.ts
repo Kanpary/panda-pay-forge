@@ -1,22 +1,44 @@
+import { createHmac as createHmacDigest } from 'node:crypto'
 import { NextResponse } from 'next/server'
+
+function createHmac(payload: string, secret?: string) {
+  return createHmacDigest('sha512', secret ?? '').update(payload).digest('hex')
+}
 import { insertDeposit } from '../../../../lib/onixpay-db'
+import { getOnixPayCredentials, getOnixPaySandbox, getOnixPayUrl } from '../../../../lib/onixpay-environment'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const userId = typeof body.user_id === 'string' ? body.user_id : ''
+    const userId = typeof body.user_id === 'string' ? body.user_id.trim() : ''
     const amount = Number(body.amount)
-    if (!userId || !Number.isFinite(amount) || amount <= 0) return NextResponse.json({ message: 'user_id e amount são obrigatórios.' }, { status: 400 })
+    const nome = typeof body.nome === 'string' && body.nome.trim() ? body.nome.trim() : 'Cliente'
+    const cpf = typeof body.cpf === 'string' ? body.cpf.replace(/\D/g, '') : ''
+    if (!userId || !Number.isFinite(amount) || amount <= 0 || cpf.length !== 11) {
+      return NextResponse.json({ message: 'user_id, amount e um CPF válido são obrigatórios.' }, { status: 400 })
+    }
 
-    const response = await fetch('https://onixpay.space/api/v2/pix/qrcode.php', {
+    const sandbox = await getOnixPaySandbox()
+    const { client_id, client_secret } = getOnixPayCredentials()
+    if (!client_id || !client_secret) {
+      return NextResponse.json({ message: 'Credenciais OnixPay não configuradas.' }, { status: 503 })
+    }
+    const payload = new URLSearchParams({
+      client_id,
+      client_secret,
+      nome,
+      cpf,
+      valor: amount.toFixed(2),
+      descricao: typeof body.descricao === 'string' ? body.descricao : 'Depósito Pix',
+      urlnoty: `${new URL(request.url).origin}/api/onixpay/webhook`,
+    }).toString()
+    const response = await fetch(`${getOnixPayUrl(sandbox)}/pix/qrcode.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: process.env.ONIXPAY_CLIENT_ID,
-        client_secret: process.env.ONIXPAY_CLIENT_SECRET,
-        amount,
-        webhook_url: `${new URL(request.url).origin}/api/onixpay/webhook`,
-      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        hmac: createHmac(payload, client_secret),
+      },
+      body: payload,
       cache: 'no-store',
     })
     const data = await response.json().catch(() => ({}))
