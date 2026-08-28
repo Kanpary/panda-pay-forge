@@ -2389,17 +2389,18 @@
         var btnMenuTopo = document.getElementById("btnMenuTopo");
         if (btnMenuTopo) btnMenuTopo.style.display = "inline-block";
         if (timerEl) timerEl.style.display = "inline-block";
-      } else if (isLoginPage) {
-        // Na tela de login não chamar getBalance/getPandaConfig (evita requisição que retorna "Não autenticado")
-        if (modalAuth) modalAuth.style.display = "flex";
-        if (modalInicio) modalInicio.style.display = "none";
-        var btnMenuTopo = document.getElementById("btnMenuTopo");
-        if (btnMenuTopo) btnMenuTopo.style.display = "none";
       } else if (isEmbedded && !window.__pandaHasParentSession?.()) {
         // O iframe aguarda o frontend pai entregar a sessão; nunca abre auth própria.
         if (modalAuth) modalAuth.style.display = "none";
         if (modalInicio) modalInicio.style.display = "none";
         return;
+      } else if (isLoginPage) {
+        // A autenticação pertence ao frontend pai, inclusive se a URL legada
+        // /login for usada dentro de um iframe.
+        if (modalAuth) modalAuth.style.display = "none";
+        if (modalInicio) modalInicio.style.display = "none";
+        var btnMenuTopo = document.getElementById("btnMenuTopo");
+        if (btnMenuTopo) btnMenuTopo.style.display = "none";
       } else {
         if (typeof getBalance === "function") {
           const res = await getBalance();

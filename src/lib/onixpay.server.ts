@@ -1,8 +1,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-const ONIXPAY_CLIENT_ID = process.env["ONIXPAY_CLIENT_ID"] ?? "lucastroy_9268056431";
-const ONIXPAY_CLIENT_SECRET = process.env["secret"];
-const ONIXPAY_WEBHOOK_SECRET = process.env["secret_2"];
+const ONIXPAY_CLIENT_ID = process.env["ONIXPAY_CLIENT_ID"];
+const ONIXPAY_CLIENT_SECRET = process.env["ONIXPAY_CLIENT_SECRET"];
+const ONIXPAY_WEBHOOK_SECRET = process.env["ONIXPAY_WEBHOOK_SECRET"];
 const ONIXPAY_API_URL = "https://onixpay.space/api/v2";
 
 function requireConfig() {
