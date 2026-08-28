@@ -35,6 +35,28 @@
     return sessionToken;
   }
 
+  function waitForSession(timeoutMs) {
+    if (sessionToken) return Promise.resolve(sessionToken);
+    return new Promise(function (resolve) {
+      var settled = false;
+      var timer = setTimeout(function () {
+        if (settled) return;
+        settled = true;
+        window.removeEventListener("pandapix:session-ready", onReady);
+        resolve(null);
+      }, timeoutMs || 4000);
+      function onReady() {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        window.removeEventListener("pandapix:session-ready", onReady);
+        resolve(sessionToken);
+      }
+      window.addEventListener("pandapix:session-ready", onReady);
+      requestParentSession();
+    });
+  }
+
   // Exposto apenas como estado booleano para o jogo decidir quando iniciar.
   // O token nunca é exposto ao DOM nem persistido pelo iframe.
   window.__pandaHasParentSession = function () {
@@ -43,7 +65,7 @@
 
   async function call(path, options) {
     var opts = options || {};
-    var token = getToken();
+    var token = await waitForSession();
     var headers = { "content-type": "application/json" };
     if (token) headers["authorization"] = "Bearer " + token;
 
