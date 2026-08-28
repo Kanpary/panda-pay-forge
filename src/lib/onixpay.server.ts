@@ -112,5 +112,5 @@ export function verifyOnixPaySignature(payload: string, signature: string | null
 export { ONIXPAY_WEBHOOK_SECRET };
 
 export function isOnixPayConfigured() {
-  return Boolean(ONIXPAY_API_URL && ONIXPAY_CLIENT_SECRET && ONIXPAY_WEBHOOK_SECRET);
+  return Boolean(ONIXPAY_API_URL && ONIXPAY_CLIENT_ID && ONIXPAY_CLIENT_SECRET);
 }
