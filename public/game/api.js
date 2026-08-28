@@ -53,6 +53,13 @@
     if (!res.ok || json.success === false) {
       throw new Error(json.error || "Erro na requisição");
     }
+
+    // Os endpoints atuais retornam os campos diretamente no JSON, enquanto o
+    // game.js legado lê também a forma { success, data }. Mantemos as duas
+    // formas durante a migração para evitar saldo/configuração indefinidos.
+    if (json.data == null) {
+      json.data = json;
+    }
     return json;
   }
 

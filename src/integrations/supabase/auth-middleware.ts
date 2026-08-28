@@ -52,23 +52,16 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       throw new Error("Unauthorized: No request headers available");
     }
 
-    const authHeader = request.headers.get("authorization");
+    const authHeader = request.headers.get("authorization")?.trim();
 
     if (!authHeader) {
       throw new Error("Unauthorized: No authorization header provided");
     }
 
-    if (!authHeader.startsWith("Bearer ")) {
-      throw new Error("Unauthorized: Only Bearer tokens are supported");
-    }
-
-    const token = authHeader.replace("Bearer ", "");
+    const bearerMatch = authHeader.match(/^Bearer\s+(.+)$/i);
+    const token = bearerMatch?.[1]?.trim();
     if (!token) {
-      throw new Error("Unauthorized: No token provided");
-    }
-
-    if (token.split(".").length !== 3) {
-      throw new Error("Unauthorized: Invalid token");
+      throw new Error("Unauthorized: Only Bearer tokens are supported");
     }
 
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_PUBLISHABLE_KEY!, {
