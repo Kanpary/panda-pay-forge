@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { cookies: { getAll: () => cookieStore.getAll(), setAll: values => values.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } },
   )
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) return NextResponse.redirect(new URL('/admin?error=invalid', request.url), 303)
-  return NextResponse.redirect(new URL('/admin', request.url), 303)
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error || !data.session) return NextResponse.json({ message: 'E-mail ou senha inválidos.' }, { status: 401 })
+  return NextResponse.json({ session: data.session })
 }
