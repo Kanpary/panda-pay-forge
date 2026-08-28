@@ -1,135 +1,158 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+session_start();
+require_once '../db.php';
 
-// Tenta carregar o security, mas não trava se não existir (ajuste conforme sua estrutura)
-if (file_exists('../includes/security.php')) {
-    require_once '../includes/security.php';
-    if (function_exists('secureSessionInit')) secureSessionInit();
-} else {
-    session_start();
-}
-
-// Rota para a conexão centralizada que criamos
-require_once '../conn.php'; 
-
-// Se já estiver logado como admin, vai direto para o index
 if (isset($_SESSION['admin_id'])) {
     header('Location: index.php');
     exit;
 }
 
-// Busca a logo nas suas configurações reais
-try {
-    // No seu banco a tabela é game_settings
-    $stmtLogo = $pdo->prepare("SELECT description FROM game_settings WHERE slug = 'logo_url' LIMIT 1");
-    $stmtLogo->execute();
-    $logo_setting = $stmtLogo->fetch();
-    $logo_path = !empty($logo_setting['description']) ? '../' . $logo_setting['description'] : '../assets/img/logo.png';
-} catch (Exception $e) {
-    $logo_path = '../assets/img/logo.png';
-}
-
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
-    $senha = $_POST['senha'] ?? '';
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-    // Adaptado para sua tabela 'users' e nova coluna 'is_admin'
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? AND is_admin = 1 LIMIT 1");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
-
-    if ($user && password_verify($senha, $user['senha'])) {
-        session_regenerate_id(true); 
-        $_SESSION['admin_id'] = $user['id'];
-        $_SESSION['admin_nome'] = $user['nome'];
-        $_SESSION['admin_email'] = $user['email'];
-
-        header('Location: index.php');
-        exit;
+    if (empty($username) || empty($password)) {
+        $error = 'Por favor, preencha todos os campos.';
     } else {
-        $error = 'E-mail ou senha incorretos, ou você não tem permissão de administrador.';
-    }
-}
+        try {
+            $stmt = $pdo->prepare("SELECT id, password FROM admins WHERE username = ?");
+            $stmt->execute([$username]);
+            $admin = $stmt->fetch();
 
-// Helper simples para CSRF caso o security.php não esteja presente
-if (!function_exists('csrfToken')) {
-    function csrfToken() {
-        if (empty($_SESSION['csrf_token'])) $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        return $_SESSION['csrf_token'];
+            if ($admin && password_verify($password, $admin['password'])) {
+                $_SESSION['admin_id'] = $admin['id'];
+                $_SESSION['admin_username'] = $username;
+                header('Location: index.php');
+                exit;
+            } else {
+                $error = 'Usuário ou senha inválidos.';
+            }
+        } catch (PDOException $e) {
+            $error = 'Erro no sistema. Tente novamente mais tarde.';
+        }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-br" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login Administrativo | PandaPix</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Login Admin</title>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #09090b; }
-        .glass { background: rgba(24, 24, 27, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(34, 197, 94, 0.1); }
+        :root {
+            --primary-color: #3b82f6;
+            --bg-color: #000000;
+            --card-bg: #111111;
+            --text-color: #e5e7eb;
+            --text-muted: #9ca3af;
+            --border-color: #222222;
+            --input-bg: #1a1a1a;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+        .login-container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+        .btn-login:hover {
+            background-color: #2563eb;
+        }
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            font-size: 0.9rem;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-900/10 via-zinc-950 to-zinc-950">
-
-    <div class="w-full max-w-md animate-fade-in">
-        <div class="glass rounded-[2.5rem] p-10 shadow-2xl">
-            
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center mb-6">
-                    <img src="<?= htmlspecialchars($logo_path) ?>" alt="Logo" class="max-h-20 w-auto object-contain drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]" onerror="this.src='../logopandapix.png'">
-                </div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Painel PandaPix</h1>
-                <p class="text-zinc-500 mt-2 font-medium italic">Gestão Administrativa</p>
-            </div>
-
-            <?php if ($error): ?>
-                <div class="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-4 rounded-2xl mb-8 flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    <span><?= htmlspecialchars($error) ?></span>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST" class="space-y-6">
-                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
-                <div>
-                    <label class="block text-xs font-bold text-zinc-500 uppercase tracking-[0.15em] mb-2.5 ml-1">E-mail Administrativo</label>
-                    <input type="email" name="email" required 
-                        class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-green-600 focus:ring-4 focus:ring-green-600/10 transition-all placeholder:text-zinc-700" 
-                        placeholder="admin@exemplo.com">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-zinc-500 uppercase tracking-[0.15em] mb-2.5 ml-1">Senha</label>
-                    <input type="password" name="senha" required 
-                        class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-green-600 focus:ring-4 focus:ring-green-600/10 transition-all placeholder:text-zinc-700" 
-                        placeholder="••••••••">
-                </div>
-
-                <div class="pt-2">
-                    <button type="submit" 
-                        class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-600/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group">
-                        <span>Acessar Painel</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 -1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-            </form>
-        </div>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">Admin Login</h2>
         
-        <p class="text-center text-zinc-600 text-xs mt-8 uppercase tracking-widest font-bold">
-            &copy; <?= date('Y') ?> PandaPix • Gestão Interna
-        </p>
-    </div>
+        <?php if ($error): ?>
+            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
 
+        <form method="POST">
+            <div class="form-group">
+                <label for="username" class="form-label">Usuário</label>
+                <input type="text" id="username" name="username" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" id="password" name="password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+    </div>
 </body>
 </html>
