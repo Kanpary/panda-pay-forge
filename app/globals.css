@@ -1,0 +1,2 @@
+:root { --background:#0b1220; --foreground:#f8fafc; --panel:#111827; --muted:#94a3b8; --accent:#22c55e; --line:#263244; }
+*{box-sizing:border-box} body{margin:0;background:var(--background);color:var(--foreground);font-family:Arial,sans-serif} button{cursor:pointer}
