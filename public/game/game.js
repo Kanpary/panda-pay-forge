@@ -2449,9 +2449,14 @@
         }
         atualizarModoNomeNoFront();
       }
-    } catch (e) {
-      esconderLoadingMostrar(true); // em caso de erro, mostrar login
-    }
+  } catch (e) {
+  if (isEmbedded) {
+  if (modalAuth) modalAuth.style.display = "none";
+  if (modalInicio) modalInicio.style.display = "none";
+  return;
+  }
+  esconderLoadingMostrar(true);
+  }
   }
   if (document.readyState === "complete") {
     setTimeout(_pandaOnLoad, 0);
