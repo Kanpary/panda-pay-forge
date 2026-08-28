@@ -26,13 +26,23 @@ class OnixPay
         $stmt->execute();
         $config = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$config || empty($config['client_id']) || empty($config['client_secret'])) {
-            throw new RuntimeException('OnixPay não configurada. Informe client_id e client_secret no painel administrativo.');
+        $envClientId = trim((string) getenv('ONIXPAY_CLIENT_ID'));
+        $envClientSecret = trim((string) getenv('ONIXPAY_CLIENT_SECRET'));
+        $envWebhookSecret = trim((string) getenv('ONIXPAY_WEBHOOK_SECRET'));
+
+        if (!$config) {
+            $config = [];
         }
 
-        $this->clientId = trim($config['client_id']);
-        $this->clientSecret = trim($config['client_secret']);
-        $this->webhookSecret = !empty($config['webhook_secret']) ? trim($config['webhook_secret']) : null;
+        // Keep the original database configuration, with a server-only fallback
+        // for deployments that provide credentials through protected environment variables.
+        $this->clientId = trim((string) ($config['client_id'] ?? '')) ?: $envClientId;
+        $this->clientSecret = trim((string) ($config['client_secret'] ?? '')) ?: $envClientSecret;
+        $this->webhookSecret = trim((string) ($config['webhook_secret'] ?? '')) ?: ($envWebhookSecret ?: null);
+
+        if ($this->clientId === '' || $this->clientSecret === '') {
+            throw new RuntimeException('OnixPay não configurada. Informe client_id e client_secret no painel administrativo.');
+        }
 
         if (!empty($config['base_url'])) {
             $this->baseUrl = rtrim($config['base_url'], '/') . '/';
