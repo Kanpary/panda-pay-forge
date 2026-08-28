@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getSupabaseBrowser } from '../../lib/supabase-browser'
 
 export default function AdminPage() {
   const [supabase, setSupabase] = useState<ReturnType<typeof getSupabaseBrowser> | null>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
   const [session, setSession] = useState<any>(null)
   const [email, setEmail] = useState('detroit.system@gmail.com')
   const [password, setPassword] = useState('')
@@ -17,24 +15,31 @@ export default function AdminPage() {
   useEffect(() => {
     const browser = getSupabaseBrowser()
     setSupabase(browser)
-    browser.auth.getSession().then(({ data }) => setSession(data.session))
+    let active = true
+    browser.auth.getSession().then(({ data }) => { if (active) setSession(data.session) })
+    const { data: listener } = browser.auth.onAuthStateChange((_event, nextSession) => {
+      if (active) setSession(nextSession)
+    })
+    return () => { active = false; listener.subscription.unsubscribe() }
   }, [])
   useEffect(() => {
     if (!session) return
     fetch('/api/admin/settings', { headers: { Authorization: `Bearer ${session.access_token}` } }).then(r => r.json()).then(d => setSandbox(d.sandbox ?? true))
   }, [session])
 
-  async function login() {
+  async function login(event?: React.FormEvent<HTMLFormElement>) {
+    event?.preventDefault()
     setBusy(true); setError('')
-    if (!supabase) { setError('Serviço de autenticação indisponível.'); setBusy(false); return }
-    const loginEmail = emailRef.current?.value.trim() || email.trim()
-    const loginPassword = passwordRef.current?.value || password
-    const { data, error: authError } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword })
+    const browser = supabase ?? getSupabaseBrowser()
+    const form = event?.currentTarget
+    const formData = form ? new FormData(form) : null
+    const loginEmail = String(formData?.get('email') ?? email).trim()
+    const loginPassword = String(formData?.get('password') ?? password)
+    const { data, error: authError } = await browser.auth.signInWithPassword({ email: loginEmail, password: loginPassword })
     if (authError || !data.session) {
       setError('E-mail ou senha inválidos.')
     } else {
-      const { data: current } = await supabase.auth.getSession()
-      setSession(current.session ?? data.session)
+      setSession(data.session)
     }
     setBusy(false)
   }
@@ -48,7 +53,7 @@ export default function AdminPage() {
     setBusy(false)
   }
 
-  if (!session) return <main className="admin-page"><section className="admin-login"><p className="eyebrow">POU ONIX · ADMIN</p><h1>Acesso administrativo</h1><label>E-mail<input ref={emailRef} type="email" defaultValue={email} required /></label><label>Senha<input ref={passwordRef} type="password" defaultValue={password} required /></label>{error && <p className="admin-error">{error}</p>}<button type="button" disabled={busy} onClick={() => void login()}>{busy ? 'Entrando...' : 'Entrar no painel'}</button></section></main>
+  if (!session) return <main className="admin-page"><section className="admin-login"><p className="eyebrow">POU ONIX · ADMIN</p><h1>Acesso administrativo</h1><form onSubmit={event => void login(event)}><label>E-mail<input name="email" defaultValue={email} type="email" required autoComplete="email" /></label><label>Senha<input name="password" type="password" required autoComplete="current-password" /></label>{error && <p className="admin-error">{error}</p>}<button type="submit" disabled={busy}>{busy ? 'Entrando...' : 'Entrar no painel'}</button></form></section></main>
 
   return <main className="admin-page"><header className="admin-header"><div><p className="eyebrow">POU ONIX · CONTROLE</p><h1>Painel administrativo</h1></div><button className="secondary" onClick={() => supabase.auth.signOut()}>Sair</button></header><section className="admin-grid"><article className="admin-card environment-card"><div><p className="eyebrow">ONIXPAY</p><h2>Ambiente de pagamentos</h2><p className="muted">Escolha onde depósitos e saques serão processados.</p></div><label className="sandbox-toggle"><input type="checkbox" checked={sandbox} disabled={busy} onChange={e => toggle(e.target.checked)} /><span>{sandbox ? 'Sandbox ativo' : 'Produção ativa'}</span></label><p className={sandbox ? 'status safe' : 'status danger'}>{sandbox ? 'Modo seguro para testes. Nenhum dinheiro real será movimentado.' : 'Modo produção. Operações financeiras reais estão habilitadas.'}</p></article><article className="admin-card"><p className="eyebrow">VISÃO GERAL</p><h2>Operações</h2><div className="metric-row"><span>Depósitos</span><strong>Prontos para consulta</strong></div><div className="metric-row"><span>Saques</span><strong>Controle server-side</strong></div><div className="metric-row"><span>Jogo Pou</span><strong>Sessões protegidas</strong></div></article></section>{error && <p className="admin-error">{error}</p>}</main>
 }
