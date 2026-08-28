@@ -1,40 +1,45 @@
-import { createHmac as createHmacDigest } from 'node:crypto'
 import { NextResponse } from 'next/server'
-
-function createHmac(payload: string, secret?: string) {
-  return createHmacDigest('sha512', secret ?? '').update(payload).digest('hex')
-}
 import { getOnixPayCredentials, getOnixPaySandbox, getOnixPayUrl } from '../../../../lib/onixpay-environment'
+
+function digits(value: unknown) {
+  return typeof value === 'string' ? value.replace(/\D/g, '') : ''
+}
+
+function text(value: unknown, fallback: string) {
+  return typeof value === 'string' && value.trim() ? value.trim() : fallback
+}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const userId = typeof body.user_id === 'string' ? body.user_id.trim() : ''
     const amount = Number(body.amount)
-    const pixKey = typeof body.pix_key === 'string' ? body.pix_key.trim() : ''
-    const pixKeyType = typeof body.pix_key_type === 'string' ? body.pix_key_type.trim() : ''
+    const pixKey = text(body.pix_key, '')
+    const name = text(body.nome, 'Cliente')
+    const cpf = digits(body.cpf)
 
-    if (!userId || !Number.isFinite(amount) || amount <= 0 || !pixKey) {
-      return NextResponse.json({ message: 'user_id, amount e pix_key são obrigatórios.' }, { status: 400 })
+    if (!userId || !Number.isFinite(amount) || amount <= 0 || !pixKey || !name || cpf.length !== 11) {
+      return NextResponse.json({ message: 'user_id, amount, nome, cpf e pix_key são obrigatórios.' }, { status: 400 })
     }
 
     const sandbox = await getOnixPaySandbox()
-    const payload = JSON.stringify({
-      user_id: userId,
-      amount,
-      pix_key: pixKey,
-      ...(pixKeyType ? { pix_key_type: pixKeyType } : {}),
-      webhook_url: `${new URL(request.url).origin}/api/onixpay/webhook`,
-      sandbox,
-    })
     const { client_id, client_secret } = getOnixPayCredentials()
-    const response = await fetch(`${getOnixPayUrl(sandbox)}/pix/withdraw.php`, {
+    if (!client_id || !client_secret) {
+      return NextResponse.json({ message: 'Credenciais OnixPay não configuradas.' }, { status: 503 })
+    }
+    const payload = new URLSearchParams({
+      client_id,
+      client_secret,
+      nome: name,
+      cpf,
+      valor: amount.toFixed(2),
+      chave_pix: pixKey,
+      descricao: text(body.descricao, 'Saque Pix'),
+      urlnoty: `${new URL(request.url).origin}/api/onixpay/webhook`,
+    }).toString()
+    const response = await fetch(`${getOnixPayUrl(sandbox)}/pix/payment.php`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `ApiKey ${client_id}:${client_secret}`,
-        hmac: createHmac(payload, client_secret),
-      },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: payload,
       cache: 'no-store',
     })

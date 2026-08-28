@@ -10,17 +10,24 @@ import { getOnixPayCredentials, getOnixPaySandbox, getOnixPayUrl } from '../../.
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const userId = typeof body.user_id === 'string' ? body.user_id : ''
+    const userId = typeof body.user_id === 'string' ? body.user_id.trim() : ''
     const amount = Number(body.amount)
-    if (!userId || !Number.isFinite(amount) || amount <= 0) return NextResponse.json({ message: 'user_id e amount são obrigatórios.' }, { status: 400 })
+    const nome = typeof body.nome === 'string' && body.nome.trim() ? body.nome.trim() : 'Cliente'
+    const cpf = typeof body.cpf === 'string' ? body.cpf.replace(/\D/g, '') : ''
+    if (!userId || !Number.isFinite(amount) || amount <= 0 || cpf.length !== 11) {
+      return NextResponse.json({ message: 'user_id, amount e um CPF válido são obrigatórios.' }, { status: 400 })
+    }
 
     const sandbox = await getOnixPaySandbox()
     const { client_id, client_secret } = getOnixPayCredentials()
+    if (!client_id || !client_secret) {
+      return NextResponse.json({ message: 'Credenciais OnixPay não configuradas.' }, { status: 503 })
+    }
     const payload = new URLSearchParams({
       client_id,
       client_secret,
-      nome: typeof body.nome === 'string' ? body.nome : 'Cliente Sandbox',
-      cpf: typeof body.cpf === 'string' ? body.cpf : '00000000000',
+      nome,
+      cpf,
       valor: amount.toFixed(2),
       descricao: typeof body.descricao === 'string' ? body.descricao : 'Depósito Pix',
       urlnoty: `${new URL(request.url).origin}/api/onixpay/webhook`,
