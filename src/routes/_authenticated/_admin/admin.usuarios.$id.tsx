@@ -82,7 +82,21 @@ function AdminUserDetail() {
   }, [query.data]);
 
   const mutation = useMutation({
-    mutationFn: () => save({ data: { id, saldo: form.saldo, saldo_bonus: form.saldo_bonus, saldo_comissao: form.saldo_comissao, comissao_cpa: form.comissao_cpa, comissao_cpa_nivel2: form.comissao_cpa_nivel2, comissao_revshare: form.comissao_revshare, bloqueado: form.bloqueado, is_demo: form.is_demo, tipo_conta: form.tipo_conta } }),
+    mutationFn: () =>
+      save({
+        data: {
+          id,
+          saldo: form.saldo,
+          saldo_bonus: form.saldo_bonus,
+          saldo_comissao: form.saldo_comissao,
+          comissao_cpa: form.comissao_cpa,
+          comissao_cpa_nivel2: form.comissao_cpa_nivel2,
+          comissao_revshare: form.comissao_revshare,
+          bloqueado: form.bloqueado,
+          is_demo: form.is_demo,
+          tipo_conta: form.tipo_conta,
+        },
+      }),
     onSuccess: async () => {
       toast.success("Usuário atualizado.");
       await queryClient.invalidateQueries({ queryKey: ["admin-user", id] });
@@ -92,8 +106,22 @@ function AdminUserDetail() {
   });
 
   const limitsMutation = useMutation({
-    mutationFn: () => saveLimits({ data: { userId: id, rtp: form.rtp, min_bet: form.min_bet, max_bet: form.max_bet, daily_bet_limit: form.daily_bet_limit, daily_loss_limit: form.daily_loss_limit, enabled: form.limits_enabled } }),
-    onSuccess: async () => { toast.success("RTP e limites salvos."); await queryClient.invalidateQueries({ queryKey: ["admin-user", id] }); },
+    mutationFn: () =>
+      saveLimits({
+        data: {
+          userId: id,
+          rtp: form.rtp,
+          min_bet: form.min_bet,
+          max_bet: form.max_bet,
+          daily_bet_limit: form.daily_bet_limit,
+          daily_loss_limit: form.daily_loss_limit,
+          enabled: form.limits_enabled,
+        },
+      }),
+    onSuccess: async () => {
+      toast.success("RTP e limites salvos.");
+      await queryClient.invalidateQueries({ queryKey: ["admin-user", id] });
+    },
     onError: (error: Error) => toast.error(error.message),
   });
 
@@ -270,14 +298,88 @@ function AdminUserDetail() {
           </AdminCard>
 
           <AdminCard title="RTP e limites individuais">
-            <form className="grid gap-3 sm:grid-cols-2" onSubmit={(event) => { event.preventDefault(); limitsMutation.mutate(); }}>
-              <Field label="RTP (%)"><input className={inputClass} type="number" min="0" max="100" step="0.01" value={form.rtp} onChange={(event) => setForm((f) => ({ ...f, rtp: Number(event.target.value) }))} /></Field>
-              <Field label="Aposta mínima (R$)"><input className={inputClass} type="number" min="0.01" step="0.01" value={form.min_bet} onChange={(event) => setForm((f) => ({ ...f, min_bet: Number(event.target.value) }))} /></Field>
-              <Field label="Aposta máxima (R$)"><input className={inputClass} type="number" min="0.01" step="0.01" value={form.max_bet} onChange={(event) => setForm((f) => ({ ...f, max_bet: Number(event.target.value) }))} /></Field>
-              <Field label="Limite diário de apostas (R$)"><input className={inputClass} type="number" min="0" step="0.01" value={form.daily_bet_limit} onChange={(event) => setForm((f) => ({ ...f, daily_bet_limit: Number(event.target.value) }))} /></Field>
-              <Field label="Limite diário de perdas (R$)"><input className={inputClass} type="number" min="0" step="0.01" value={form.daily_loss_limit} onChange={(event) => setForm((f) => ({ ...f, daily_loss_limit: Number(event.target.value) }))} /></Field>
-              <label className="flex items-center gap-2 py-2 text-sm"><input type="checkbox" className="size-4 accent-primary" checked={form.limits_enabled} onChange={(event) => setForm((f) => ({ ...f, limits_enabled: event.target.checked }))} /> Jogo habilitado para este usuário</label>
-              <div className="sm:col-span-2"><button type="submit" className={smallBtn} disabled={limitsMutation.isPending}>{limitsMutation.isPending ? "Salvando…" : "Salvar RTP e limites"}</button></div>
+            <form
+              className="grid gap-3 sm:grid-cols-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                limitsMutation.mutate();
+              }}
+            >
+              <Field label="RTP (%)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  value={form.rtp}
+                  onChange={(event) => setForm((f) => ({ ...f, rtp: Number(event.target.value) }))}
+                />
+              </Field>
+              <Field label="Aposta mínima (R$)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={form.min_bet}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, min_bet: Number(event.target.value) }))
+                  }
+                />
+              </Field>
+              <Field label="Aposta máxima (R$)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={form.max_bet}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, max_bet: Number(event.target.value) }))
+                  }
+                />
+              </Field>
+              <Field label="Limite diário de apostas (R$)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.daily_bet_limit}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, daily_bet_limit: Number(event.target.value) }))
+                  }
+                />
+              </Field>
+              <Field label="Limite diário de perdas (R$)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.daily_loss_limit}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, daily_loss_limit: Number(event.target.value) }))
+                  }
+                />
+              </Field>
+              <label className="flex items-center gap-2 py-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-primary"
+                  checked={form.limits_enabled}
+                  onChange={(event) =>
+                    setForm((f) => ({ ...f, limits_enabled: event.target.checked }))
+                  }
+                />{" "}
+                Jogo habilitado para este usuário
+              </label>
+              <div className="sm:col-span-2">
+                <button type="submit" className={smallBtn} disabled={limitsMutation.isPending}>
+                  {limitsMutation.isPending ? "Salvando…" : "Salvar RTP e limites"}
+                </button>
+              </div>
             </form>
           </AdminCard>
 

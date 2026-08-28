@@ -19,24 +19,10 @@
 
   window.parent.postMessage({ type: "pandapix:ready" }, window.location.origin);
 
+  // A sessão pertence exclusivamente ao frontend pai. O iframe nunca lê
+  // localStorage nem mantém uma segunda autenticação.
   function getToken() {
-    if (sessionToken) return sessionToken;
-    try {
-      var store =
-        window.parent && window.parent !== window
-          ? window.parent.localStorage
-          : window.localStorage;
-      for (var i = 0; i < store.length; i++) {
-        var key = store.key(i);
-        if (key && key.indexOf("-auth-token") !== -1) {
-          var raw = JSON.parse(store.getItem(key));
-          if (raw && raw.access_token) return raw.access_token;
-        }
-      }
-    } catch (e) {
-      /* origem diferente ou storage bloqueado */
-    }
-    return null;
+    return sessionToken;
   }
 
   async function call(path, options) {
