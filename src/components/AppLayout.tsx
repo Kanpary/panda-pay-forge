@@ -22,10 +22,12 @@ export function AppLayout({ children, title }: { children: ReactNode; title?: st
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/painel" className="flex min-w-0 items-center gap-2">
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-lg">
-              🐼
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-xs font-black tracking-tighter text-primary-foreground">
+              PX
             </span>
-            <span className="truncate text-base font-bold tracking-tight">PandaPix</span>
+            <span className="truncate text-base font-black tracking-tight">
+              PANDA<span className="text-accent">/</span>ONIX
+            </span>
           </Link>
           <div className="flex items-center gap-2">
             <div className="rounded-lg bg-secondary px-3 py-1.5 text-right">

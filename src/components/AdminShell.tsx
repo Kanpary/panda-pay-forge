@@ -37,12 +37,15 @@ export function AdminShell({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2">
             <span
-              className="grid size-9 place-items-center rounded-xl bg-accent/15 text-lg"
+              className="grid size-9 place-items-center rounded-xl bg-accent text-[10px] font-black tracking-tight text-accent-foreground"
               aria-hidden="true"
             >
-              Admin
+              OPS
             </span>
-            <span className="text-sm font-bold tracking-tight">PandaPix Admin</span>
+            <span className="text-sm font-black tracking-tight">
+              PANDA<span className="text-accent">/</span>ONIX{" "}
+              <span className="font-medium text-muted-foreground">CONTROL</span>
+            </span>
           </div>
           <Link
             to="/painel"
