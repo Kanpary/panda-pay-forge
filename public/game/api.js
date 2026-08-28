@@ -17,7 +17,17 @@
     }
   });
 
-  window.parent.postMessage({ type: "pandapix:ready" }, window.location.origin);
+  function requestParentSession() {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "pandapix:ready" }, window.location.origin);
+    }
+  }
+
+  // O pai pode montar o iframe antes de terminar a hidratação. Repetir o
+  // handshake evita que o jogo caia no fallback legado de autenticação.
+  requestParentSession();
+  setTimeout(requestParentSession, 250);
+  setTimeout(requestParentSession, 1000);
 
   // A sessão pertence exclusivamente ao frontend pai. O iframe nunca lê
   // localStorage nem mantém uma segunda autenticação.
