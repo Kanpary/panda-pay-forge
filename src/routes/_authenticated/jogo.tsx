@@ -94,10 +94,16 @@ function JogoPage() {
           ref={iframeRef}
           src="/game/index.html"
           onLoad={() => {
-            iframeRef.current?.contentWindow?.postMessage(
-              { type: "pandapix:session", access_token: session?.access_token ?? null },
-              window.location.origin,
-            );
+            // Reuse the same refresh-aware handshake used by pandapix:ready.
+            void supabase.auth.refreshSession().then(({ data }) => {
+              iframeRef.current?.contentWindow?.postMessage(
+                {
+                  type: "pandapix:session",
+                  access_token: data.session?.access_token ?? session?.access_token ?? null,
+                },
+                window.location.origin,
+              );
+            });
           }}
           className="block h-[min(720px,calc(100vh-12rem))] min-h-[560px] w-full border-0"
           loading="eager"
