@@ -23,6 +23,7 @@
   const isLoginPage =
     typeof window !== "undefined" &&
     (window.location.pathname || "").replace(/\/$/, "").endsWith("login");
+  const isEmbedded = typeof window !== "undefined" && window.parent !== window;
 
   /** Modo de dificuldade: 'facil' | 'normal' | 'dificil' | 'impossivel' (velocidade e quantidade de obstáculos) */
   let dificuldade = "normal";
@@ -2394,6 +2395,11 @@
         if (modalInicio) modalInicio.style.display = "none";
         var btnMenuTopo = document.getElementById("btnMenuTopo");
         if (btnMenuTopo) btnMenuTopo.style.display = "none";
+      } else if (isEmbedded && !window.__pandaHasParentSession?.()) {
+        // O iframe aguarda o frontend pai entregar a sessão; nunca abre auth própria.
+        if (modalAuth) modalAuth.style.display = "none";
+        if (modalInicio) modalInicio.style.display = "none";
+        return;
       } else {
         if (typeof getBalance === "function") {
           const res = await getBalance();
@@ -2503,6 +2509,9 @@
 
   // ----- Modal Login / Cadastro (banner + telefone + senha) – só em panda.html -----
   (function initModalAuth() {
+    // O frontend pai é a única autoridade de autenticação quando o jogo está embutido.
+    if (isEmbedded) return;
+
     // Inicialização do menu superior - movido para fora do bloqueio do isFreeGame
     var btnMenuTopo = document.getElementById("btnMenuTopo");
     var menuTopoDropdown = document.getElementById("menuTopoDropdown");

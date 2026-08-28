@@ -52,7 +52,7 @@ function SaquePage() {
     if (!profile) return;
     setPixType((profile.pix_type as (typeof pixTypes)[number]["value"]) || "cpf");
     setPixKey(profile.pix_key ?? "");
-  }, [profile?.pix_type, profile?.pix_key]);
+  }, [profile]);
 
   const settingsQuery = useQuery({
     queryKey: ["settings", "gateway-public"],

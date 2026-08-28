@@ -25,6 +25,12 @@
     return sessionToken;
   }
 
+  // Exposto apenas como estado booleano para o jogo decidir quando iniciar.
+  // O token nunca é exposto ao DOM nem persistido pelo iframe.
+  window.__pandaHasParentSession = function () {
+    return Boolean(sessionToken);
+  };
+
   async function call(path, options) {
     var opts = options || {};
     var token = getToken();
