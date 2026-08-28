@@ -1,10 +1,10 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
-import { getSupabaseBrowser } from '@/lib/supabase-browser'
+import { getSupabaseBrowser } from '../../lib/supabase-browser'
 
 export default function AdminPage() {
-  const supabase = getSupabaseBrowser()
+  const [supabase, setSupabase] = useState<ReturnType<typeof getSupabaseBrowser> | null>(null)
   const [session, setSession] = useState<any>(null)
   const [email, setEmail] = useState('detroit.system@gmail.com')
   const [password, setPassword] = useState('')
@@ -12,7 +12,11 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  useEffect(() => { supabase.auth.getSession().then(({ data }) => setSession(data.session)) }, [supabase.auth])
+  useEffect(() => {
+    const browser = getSupabaseBrowser()
+    setSupabase(browser)
+    browser.auth.getSession().then(({ data }) => setSession(data.session))
+  }, [])
   useEffect(() => {
     if (!session) return
     fetch('/api/admin/settings', { headers: { Authorization: `Bearer ${session.access_token}` } }).then(r => r.json()).then(d => setSandbox(d.sandbox ?? true))
@@ -20,6 +24,7 @@ export default function AdminPage() {
 
   async function login(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError('')
+    if (!supabase) return
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
     if (authError) setError('E-mail ou senha inválidos.')
     else setSession(data.session)
