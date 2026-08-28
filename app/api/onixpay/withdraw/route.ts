@@ -1,4 +1,9 @@
+import { createHmac as createHmacDigest } from 'node:crypto'
 import { NextResponse } from 'next/server'
+
+function createHmac(payload: string, secret?: string) {
+  return createHmacDigest('sha512', secret ?? '').update(payload).digest('hex')
+}
 import { getOnixPayCredentials, getOnixPaySandbox, getOnixPayUrl } from '../../../../lib/onixpay-environment'
 
 export async function POST(request: Request) {
@@ -14,18 +19,23 @@ export async function POST(request: Request) {
     }
 
     const sandbox = await getOnixPaySandbox()
+    const payload = JSON.stringify({
+      user_id: userId,
+      amount,
+      pix_key: pixKey,
+      ...(pixKeyType ? { pix_key_type: pixKeyType } : {}),
+      webhook_url: `${new URL(request.url).origin}/api/onixpay/webhook`,
+      sandbox,
+    })
+    const { client_id, client_secret } = getOnixPayCredentials()
     const response = await fetch(`${getOnixPayUrl(sandbox)}/pix/withdraw.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...getOnixPayCredentials(),
-        user_id: userId,
-        amount,
-        pix_key: pixKey,
-        ...(pixKeyType ? { pix_key_type: pixKeyType } : {}),
-        webhook_url: `${new URL(request.url).origin}/api/onixpay/webhook`,
-        sandbox,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `ApiKey ${client_id}:${client_secret}`,
+        hmac: createHmac(payload, client_secret),
+      },
+      body: payload,
       cache: 'no-store',
     })
     const data = await response.json().catch(() => ({}))

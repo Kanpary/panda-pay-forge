@@ -1,4 +1,9 @@
+import { createHmac as createHmacDigest } from 'node:crypto'
 import { NextResponse } from 'next/server'
+
+function createHmac(payload: string, secret?: string) {
+  return createHmacDigest('sha512', secret ?? '').update(payload).digest('hex')
+}
 import { insertDeposit } from '../../../../lib/onixpay-db'
 import { getOnixPayCredentials, getOnixPaySandbox, getOnixPayUrl } from '../../../../lib/onixpay-environment'
 
@@ -10,15 +15,23 @@ export async function POST(request: Request) {
     if (!userId || !Number.isFinite(amount) || amount <= 0) return NextResponse.json({ message: 'user_id e amount são obrigatórios.' }, { status: 400 })
 
     const sandbox = await getOnixPaySandbox()
+    const { client_id, client_secret } = getOnixPayCredentials()
+    const payload = new URLSearchParams({
+      client_id,
+      client_secret,
+      nome: typeof body.nome === 'string' ? body.nome : 'Cliente Sandbox',
+      cpf: typeof body.cpf === 'string' ? body.cpf : '00000000000',
+      valor: amount.toFixed(2),
+      descricao: typeof body.descricao === 'string' ? body.descricao : 'Depósito Pix',
+      urlnoty: `${new URL(request.url).origin}/api/onixpay/webhook`,
+    }).toString()
     const response = await fetch(`${getOnixPayUrl(sandbox)}/pix/qrcode.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...getOnixPayCredentials(),
-        amount,
-        webhook_url: `${new URL(request.url).origin}/api/onixpay/webhook`,
-        sandbox,
-      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        hmac: createHmac(payload, client_secret),
+      },
+      body: payload,
       cache: 'no-store',
     })
     const data = await response.json().catch(() => ({}))
