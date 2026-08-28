@@ -17,27 +17,29 @@
     }
   });
 
-  window.parent.postMessage({ type: "pandapix:ready" }, window.location.origin);
-
-  function getToken() {
-    if (sessionToken) return sessionToken;
-    try {
-      var store =
-        window.parent && window.parent !== window
-          ? window.parent.localStorage
-          : window.localStorage;
-      for (var i = 0; i < store.length; i++) {
-        var key = store.key(i);
-        if (key && key.indexOf("-auth-token") !== -1) {
-          var raw = JSON.parse(store.getItem(key));
-          if (raw && raw.access_token) return raw.access_token;
-        }
-      }
-    } catch (e) {
-      /* origem diferente ou storage bloqueado */
+  function requestParentSession() {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "pandapix:ready" }, window.location.origin);
     }
-    return null;
   }
+
+  // O pai pode montar o iframe antes de terminar a hidratação. Repetir o
+  // handshake evita que o jogo caia no fallback legado de autenticação.
+  requestParentSession();
+  setTimeout(requestParentSession, 250);
+  setTimeout(requestParentSession, 1000);
+
+  // A sessão pertence exclusivamente ao frontend pai. O iframe nunca lê
+  // localStorage nem mantém uma segunda autenticação.
+  function getToken() {
+    return sessionToken;
+  }
+
+  // Exposto apenas como estado booleano para o jogo decidir quando iniciar.
+  // O token nunca é exposto ao DOM nem persistido pelo iframe.
+  window.__pandaHasParentSession = function () {
+    return Boolean(sessionToken);
+  };
 
   async function call(path, options) {
     var opts = options || {};
@@ -60,6 +62,13 @@
     }
     if (!res.ok || json.success === false) {
       throw new Error(json.error || "Erro na requisição");
+    }
+
+    // Os endpoints atuais retornam os campos diretamente no JSON, enquanto o
+    // game.js legado lê também a forma { success, data }. Mantemos as duas
+    // formas durante a migração para evitar saldo/configuração indefinidos.
+    if (json.data == null) {
+      json.data = json;
     }
     return json;
   }

@@ -6,8 +6,17 @@ import { supabase } from "./client";
 // the browser never attaches the bearer token to serverFn RPCs.
 export const attachSupabaseAuth = createMiddleware({ type: "function" }).client(
   async ({ next }) => {
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
+    let { data } = await supabase.auth.getSession();
+    let token = data.session?.access_token;
+
+    // Server Functions precisam receber um JWT vigente. Em previews, a sessão
+    // pode estar expirada entre o carregamento da página e o clique do usuário.
+    if (data.session?.expires_at && data.session.expires_at * 1000 <= Date.now() + 30_000) {
+      const refreshed = await supabase.auth.refreshSession();
+      data = refreshed.data;
+      token = data.session?.access_token;
+    }
+
     return next({
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });

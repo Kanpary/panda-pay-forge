@@ -113,15 +113,17 @@ export const requestWithdrawal = createServerFn({ method: "POST" })
       data.tipo === "afiliado" ? Number(profile.saldo_comissao) : Number(profile.saldo);
     if (data.amount > available) throw new Error("Saldo insuficiente.");
 
-    const { error: debitError } = await supabaseAdmin
+    // Débito condicional: evita duas solicitações simultâneas consumirem o mesmo saldo.
+    const balanceColumn = data.tipo === "afiliado" ? "saldo_comissao" : "saldo";
+    const { data: debitedProfile, error: debitError } = await supabaseAdmin
       .from("profiles")
-      .update(
-        data.tipo === "afiliado"
-          ? { saldo_comissao: available - data.amount }
-          : { saldo: available - data.amount },
-      )
-      .eq("id", context.userId);
+      .update({ [balanceColumn]: available - data.amount })
+      .eq("id", context.userId)
+      .gte(balanceColumn, data.amount)
+      .select("id")
+      .maybeSingle();
     if (debitError) throw new Error(debitError.message);
+    if (!debitedProfile) throw new Error("Saldo insuficiente.");
 
     const { data: withdrawal, error } = await supabaseAdmin
       .from("withdrawals")

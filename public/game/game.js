@@ -23,6 +23,7 @@
   const isLoginPage =
     typeof window !== "undefined" &&
     (window.location.pathname || "").replace(/\/$/, "").endsWith("login");
+  const isEmbedded = typeof window !== "undefined" && window.parent !== window;
 
   /** Modo de dificuldade: 'facil' | 'normal' | 'dificil' | 'impossivel' (velocidade e quantidade de obstáculos) */
   let dificuldade = "normal";
@@ -2388,9 +2389,15 @@
         var btnMenuTopo = document.getElementById("btnMenuTopo");
         if (btnMenuTopo) btnMenuTopo.style.display = "inline-block";
         if (timerEl) timerEl.style.display = "inline-block";
+      } else if (isEmbedded && !window.__pandaHasParentSession?.()) {
+        // O iframe aguarda o frontend pai entregar a sessão; nunca abre auth própria.
+        if (modalAuth) modalAuth.style.display = "none";
+        if (modalInicio) modalInicio.style.display = "none";
+        return;
       } else if (isLoginPage) {
-        // Na tela de login não chamar getBalance/getPandaConfig (evita requisição que retorna "Não autenticado")
-        if (modalAuth) modalAuth.style.display = "flex";
+        // A autenticação pertence ao frontend pai, inclusive se a URL legada
+        // /login for usada dentro de um iframe.
+        if (modalAuth) modalAuth.style.display = "none";
         if (modalInicio) modalInicio.style.display = "none";
         var btnMenuTopo = document.getElementById("btnMenuTopo");
         if (btnMenuTopo) btnMenuTopo.style.display = "none";
@@ -2443,9 +2450,14 @@
         }
         atualizarModoNomeNoFront();
       }
-    } catch (e) {
-      esconderLoadingMostrar(true); // em caso de erro, mostrar login
-    }
+  } catch (e) {
+  if (isEmbedded) {
+  if (modalAuth) modalAuth.style.display = "none";
+  if (modalInicio) modalInicio.style.display = "none";
+  return;
+  }
+  esconderLoadingMostrar(true);
+  }
   }
   if (document.readyState === "complete") {
     setTimeout(_pandaOnLoad, 0);
@@ -2503,6 +2515,9 @@
 
   // ----- Modal Login / Cadastro (banner + telefone + senha) – só em panda.html -----
   (function initModalAuth() {
+    // O frontend pai é a única autoridade de autenticação quando o jogo está embutido.
+    if (isEmbedded) return;
+
     // Inicialização do menu superior - movido para fora do bloqueio do isFreeGame
     var btnMenuTopo = document.getElementById("btnMenuTopo");
     var menuTopoDropdown = document.getElementById("menuTopoDropdown");
