@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { insertDeposit } from '../../../../lib/onixpay-db'
+import { getOnixPayCredentials, getOnixPaySandbox, getOnixPayUrl } from '../../../../lib/onixpay-environment'
 
 export async function POST(request: Request) {
   try {
@@ -8,14 +9,15 @@ export async function POST(request: Request) {
     const amount = Number(body.amount)
     if (!userId || !Number.isFinite(amount) || amount <= 0) return NextResponse.json({ message: 'user_id e amount são obrigatórios.' }, { status: 400 })
 
-    const response = await fetch('https://onixpay.space/api/v2/pix/qrcode.php', {
+    const sandbox = await getOnixPaySandbox()
+    const response = await fetch(`${getOnixPayUrl(sandbox)}/pix/qrcode.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        client_id: process.env.ONIXPAY_CLIENT_ID,
-        client_secret: process.env.ONIXPAY_CLIENT_SECRET,
+        ...getOnixPayCredentials(),
         amount,
         webhook_url: `${new URL(request.url).origin}/api/onixpay/webhook`,
+        sandbox,
       }),
       cache: 'no-store',
     })

@@ -8,7 +8,7 @@ export default function AdminPage() {
   const [session, setSession] = useState<any>(null)
   const [email, setEmail] = useState('detroit.system@gmail.com')
   const [password, setPassword] = useState('')
-  const [sandbox, setSandbox] = useState(true)
+  const [sandbox, setSandbox] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
