@@ -25,13 +25,11 @@ export async function insertDeposit(input: {
     body: JSON.stringify({
       user_id: input.userId,
       amount: input.amount,
-      provider: 'onixpay',
       gateway: 'onixpay',
-      transaction_id: input.transactionId,
       external_id: input.externalId,
-      pix_code: input.pixCode,
+      txid: input.transactionId,
       qrcode: input.pixCode,
-      response: input.response,
+      metadata: input.response,
       status: 'pending',
     }),
   })
@@ -41,7 +39,7 @@ export async function insertDeposit(input: {
 export async function updateDepositFromWebhook(transactionId: string, status: string, payload: unknown) {
   assertConfig()
   const normalized = status.toLowerCase() === 'paid' ? 'paid' : status.toLowerCase() === 'failed' ? 'failed' : 'pending'
-  const response = await fetch(`${supabaseUrl}/rest/v1/deposits?transaction_id=eq.${encodeURIComponent(transactionId)}`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/deposits?txid=eq.${encodeURIComponent(transactionId)}`, {
     method: 'PATCH',
     headers: {
       apikey: serviceKey!,
